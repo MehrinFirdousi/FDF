@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 15:24:28 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/11/18 21:36:07 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/11/19 16:55:17 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 	*(unsigned int*)dst = color;
 }
 
-void	dda(t_data *img, int x1, int y1, int x2, int y2)
+void	dda1(t_data *img, int x1, int y1, int x2, int y2)
 {
 	double	m;
 	double	dx1;
@@ -51,6 +51,45 @@ void	dda(t_data *img, int x1, int y1, int x2, int y2)
 		}
 }
 
+void dda(t_data *img, int X0, int Y0, int X1, int Y1)
+{
+    // calculate dx & dy
+    int dx = X1 - X0;
+    int dy = Y1 - Y0;
+ 
+    // calculate steps required for generating pixels
+    int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
+ 
+    // calculate increment in x & y for each steps
+    float Xinc = dx / (float)steps;
+    float Yinc = dy / (float)steps;
+ 
+    // Put pixel for each step
+    float X = X0;
+    float Y = Y0;
+    for (int i = 0; i <= steps; i++) 
+	{
+        my_mlx_pixel_put(img, round(X), round(Y), 0xc5a3ff-i);
+        X += Xinc; // increment in x at each step
+        Y += Yinc; // increment in y at each step
+    }
+}
+
+void	draw_circle(t_data *img)
+{
+	float x;
+	float y;
+	
+	for (float i = 0; i <= 100; i+=0.25)
+	{
+		x = 200 * cos(i);
+		y = 200 * sin(i);
+		printf("%f, %f\n", round(500+x), round(300+y));
+		my_mlx_pixel_put(img, round(500+x), round(300+y), 0x00FF0000);
+		dda(img, 501, 314, round(500+x), round(300+y));
+	}
+}
+
 int	main(int argc, char **argv)
 {
 	(void)argc;
@@ -60,16 +99,58 @@ int	main(int argc, char **argv)
 	void	*mlx_win;
 	t_data	img;
 
-	
 	// initializing a window and making it remain open 
 	mlx = mlx_init();
-	mlx_win = mlx_new_window(mlx, 1920, 1080, "FDF");
+	mlx_win = mlx_new_window(mlx, 1280, 720, "FDF");
 
-	img.img = mlx_new_image(mlx, 1920, 1080);
+	img.img = mlx_new_image(mlx, 1280, 720);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, \
 								&img.line_length, &img.endian);
-	dda(&img, 100, 100, 400, 500);
+	dda(&img, 100, 400, 400, 100);
+	draw_circle(&img);
+	
+	my_mlx_pixel_put(&img, 501, 314, 0x00FFA000);
 	mlx_put_image_to_window(mlx, mlx_win, img.img, 0, 0);
 	mlx_loop(mlx);
 	
 }
+
+// weird shit
+
+// void	draw_circle(t_data *img)
+// {
+// 	float x;
+// 	float y;
+	
+// 	for (float i = 0; i <= 15; i+=0.25)
+// 	{
+// 		x = 200 * cos(i);
+// 		y = 200 * sin(i);
+// 		printf("%f, %f\n", round(500+x), round(300+y));
+// 		my_mlx_pixel_put(img, round(500+x), round(300+y), 0x00FF0000);
+// 		dda2(img, 501, 314, round(500+x), round(300+y));
+// 	}
+// }
+
+// void	dda2(t_data *img, double x1, double x2, double y1, double y2)
+// {
+// 	float	steps;
+// 	float	dy;
+// 	float	dx;
+// 	float	xi;
+// 	float	yi;
+// 	int		i;
+	
+// 	dx = x2 - x1;
+// 	dy = y2 - y1;
+// 	steps = fabs(dx) > fabs(dy) ? fabs(dx) : fabs(dy);
+// 	xi = dx / steps;
+// 	yi = dy / steps;
+// 	i = -1;
+// 	while (++i <= steps)
+// 	{
+// 		x1 += xi;
+// 		y1 += yi;
+// 		my_mlx_pixel_put(img, x1, y1,  0x00FFC000-i);
+// 	}
+// }

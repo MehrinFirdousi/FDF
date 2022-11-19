@@ -6,13 +6,13 @@
 #    By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/17 15:25:59 by mfirdous          #+#    #+#              #
-#    Updated: 2022/11/18 17:43:51 by mfirdous         ###   ########.fr        #
+#    Updated: 2022/11/19 16:56:58 by mfirdous         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	=	fdf
 
-SRCS	=	srcs/main.c
+SRCS	=	srcs/main.c srcs/parsing.c
 
 OBJS	=	${SRCS:.c=.o}
 
