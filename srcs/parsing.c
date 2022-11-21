@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/19 16:55:30 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/11/20 17:19:04 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/11/21 22:09:41 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,7 @@
 /**
  * @todo
  * find what error msgs are displayed when:
- * 		1. file doesn't exist
- * 		2. file is not a .fdf
+ * 
  * 		3. file is not given as a param
  * 			OR
  * 		   wrong number of arguments is given
@@ -27,57 +26,86 @@
 //	if not then first comma + 1 and convert the foll string from hex to dec 
 //	and finally set the given comma address to a \0
 
-t_list	*create_row(char *row, int count_points)
+t_list	*create_row(char **point_strs, int count_points)
 {
-	char	**p_strs;
 	t_point	*p;
-	char	*comma;
-	int		new_count;
+	char	*color_hex;
 	int		i;
-	
-	p_strs = ft_split(row, ' ', &new_count);
-	if (count_points != -1 && new_count != count_points)
-	{
-		ft_printf("Found wrong line length. Exiting.\n");
-		ft_free_strs(p_strs);
-		// close fd
-		exit(EXIT_FAILURE);
-	}
+
 	i = -1;
-	p = (t_point *)ft_malloc((new_count + 1) * sizeof(t_point));
-	while (p_strs[++i])
+	p = (t_point *)ft_malloc((count_points + 1) * sizeof(t_point));
+	while (point_strs[++i])
 	{
-		comma = ft_strchr(p_strs[i], ',');
-		p[i].color = hex_to_dec(comma);
-		p[i].value = ft_atoi(p_strs[i]); // free this and see if it works without leaks; because we're changing the \0
+		color_hex = ft_strchr(point_strs[i], ',') + 1;
+		// p[i].color = hex_to_dec(color_hex);
+		p[i].color = 222;
+		p[i].value = ft_atoi(point_strs[i]); // free this and see if it works without leaks; because we're changing the \0
 	}
-	ft_free_strs(p_strs);
 	return (ft_lstnew(p));
+}
+
+void	free_points(void *points)
+{
+	int	i;
+
+	if (points)
+	{
+		i = -1;
+		while (points + i)
+			free(points + i);
+	}
 }
 
 // each list_row will have an array of points, each point will describe x, y, z and color
 t_list *get_rows(char *file_name)
 {
-	int	fd;
-	int	row;
-	int	row_len;
-	t_list *row_head;
-	t_list *row_last;
+	int		fd;
+	char	*row;
+	char	**point_strs;
+	int		count_points;
+	int		new_count;
+	t_list *rows_start;
+	t_list *rows_end;
 	
+	printf("file name %s\n", file_name);
 	if (ft_strncmp(ft_strchr(file_name, '.') + 1, "fdf", 4) != 0)
-		// print error for when file is not a .fdf 
+	{
+		ft_printf("File has to be in .fdf format\n");
+		exit(EXIT_FAILURE);
+	}
+
 	fd = open(file_name, O_RDONLY);
 	if (fd == -1)
-		// print error for when file doesnt exist
+	{
+		ft_printf("File does not exist\n");
+		exit(EXIT_FAILURE);
+	}
 	row = get_next_line(fd);
-	row_len = ft_strlen(row_len);
-	row_head = create_row(row, row_len);
+	point_strs = ft_split(row, ' ', &count_points);
+	rows_start = create_row(point_strs, count_points);
+	free(row);
+	ft_free_strs(point_strs);
+	rows_end = rows_start;
+	row = get_next_line(fd);
 	while (row)
 	{
-		
+		point_strs = ft_split(row, ' ', &new_count);
+		if (new_count != count_points)
+		{
+			ft_printf("Found wrong line length. Exiting.\n");
+			close(fd);
+			free(row);
+			ft_free_strs(point_strs);
+			ft_lstclear(&rows_start, &free_points);
+			exit(EXIT_FAILURE);
+		}
+		rows_end->next = create_row(point_strs, new_count);
+		rows_end = rows_end->next;
+		free(row);
+		ft_free_strs(point_strs);
 		row = get_next_line(fd);
-		row_last = create_row(row, row_len);
 	}
+	return (rows_start);
 }
 
 // int main(int argc, char **argv)

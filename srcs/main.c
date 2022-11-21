@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 15:24:28 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/11/19 16:55:17 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/11/21 22:11:31 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,10 +69,33 @@ void dda(t_data *img, int X0, int Y0, int X1, int Y1)
     float Y = Y0;
     for (int i = 0; i <= steps; i++) 
 	{
-        my_mlx_pixel_put(img, round(X), round(Y), 0xc5a3ff-i);
+        my_mlx_pixel_put(img, round(X), round(Y), 0x00cba3ff-i);
         X += Xinc; // increment in x at each step
         Y += Yinc; // increment in y at each step
     }
+}
+
+void	dda2(t_data *img, double x1, double x2, double y1, double y2)
+{
+	float	steps;
+	float	dy;
+	float	dx;
+	float	xi;
+	float	yi;
+	int		i;
+	
+	dx = x2 - x1;
+	dy = y2 - y1;
+	steps = fabs(dx) > fabs(dy) ? fabs(dx) : fabs(dy);
+	xi = dx / steps;
+	yi = dy / steps;
+	i = -1;
+	while (++i <= steps)
+	{
+		x1 += xi;
+		y1 += yi;
+		my_mlx_pixel_put(img, x1, y1,  0x00FFC000-i);
+	}
 }
 
 void	draw_circle(t_data *img)
@@ -84,9 +107,9 @@ void	draw_circle(t_data *img)
 	{
 		x = 200 * cos(i);
 		y = 200 * sin(i);
-		printf("%f, %f\n", round(500+x), round(300+y));
-		my_mlx_pixel_put(img, round(500+x), round(300+y), 0x00FF0000);
-		dda(img, 501, 314, round(500+x), round(300+y));
+		// printf("%f, %f\n", round(500+x), round(300+y));
+		// my_mlx_pixel_put(img, round(500+x), round(300+y), 0x00FF0000);
+		dda(img, 551, 214, round(500+x), round(300+y));
 	}
 }
 
@@ -95,24 +118,29 @@ int	main(int argc, char **argv)
 	(void)argc;
 	(void)argv;
 	
-	void	*mlx;
-	void	*mlx_win;
-	t_data	img;
+	if (argc != 2)
+	{
+		ft_printf("Usage : ./fdftest <filename>\n");
+		exit(EXIT_FAILURE);
+	}
+	// void	*mlx;
+	// void	*mlx_win;
+	// t_data	img;
 
-	// initializing a window and making it remain open 
-	mlx = mlx_init();
-	mlx_win = mlx_new_window(mlx, 1280, 720, "FDF");
+	// // initializing a window and making it remain open 
+	// mlx = mlx_init();
+	// mlx_win = mlx_new_window(mlx, 1280, 720, "FDF");
 
-	img.img = mlx_new_image(mlx, 1280, 720);
-	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, \
-								&img.line_length, &img.endian);
-	dda(&img, 100, 400, 400, 100);
-	draw_circle(&img);
-	
-	my_mlx_pixel_put(&img, 501, 314, 0x00FFA000);
-	mlx_put_image_to_window(mlx, mlx_win, img.img, 0, 0);
-	mlx_loop(mlx);
-	
+	// img.img = mlx_new_image(mlx, 1280, 720);
+	// img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, \
+	// 							&img.line_length, &img.endian);
+	// // dda(&img, 100, 400, 400, 100);
+	// draw_circle(&img);
+	// mlx_put_image_to_window(mlx, mlx_win, img.img, 0, 0);
+	// my_mlx_pixel_put(&img, 501, 314, 0x00FFA000);	
+	// mlx_loop(mlx);
+	t_list *res = get_rows("test_map/basictest.fdf");
+	ft_lstclear(&res, &free_points);
 }
 
 // weird shit
@@ -132,25 +160,3 @@ int	main(int argc, char **argv)
 // 	}
 // }
 
-// void	dda2(t_data *img, double x1, double x2, double y1, double y2)
-// {
-// 	float	steps;
-// 	float	dy;
-// 	float	dx;
-// 	float	xi;
-// 	float	yi;
-// 	int		i;
-	
-// 	dx = x2 - x1;
-// 	dy = y2 - y1;
-// 	steps = fabs(dx) > fabs(dy) ? fabs(dx) : fabs(dy);
-// 	xi = dx / steps;
-// 	yi = dy / steps;
-// 	i = -1;
-// 	while (++i <= steps)
-// 	{
-// 		x1 += xi;
-// 		y1 += yi;
-// 		my_mlx_pixel_put(img, x1, y1,  0x00FFC000-i);
-// 	}
-// }
