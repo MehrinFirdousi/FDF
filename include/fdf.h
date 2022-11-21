@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 17:31:41 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/11/19 19:56:40 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/11/20 16:54:07 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 # define FDF_H
 # include "libft.h"
-# include <mlx.h>
+// # include <mlx.h>
 # include <math.h>
 # include <fcntl.h>
 
@@ -23,6 +23,7 @@ typedef struct	s_point
 	int	x;
 	int	y;
 	int	z;
+	int	value;
 	int	color;
 }				t_point;
 

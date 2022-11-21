@@ -60,7 +60,6 @@ void	ft_putendl_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
 void	*ft_malloc(size_t size);
 void	free_strs(char **args);
-int		ft_chrindex(char *s, char c);
 
 typedef struct s_list
 {
