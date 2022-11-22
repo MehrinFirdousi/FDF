@@ -27,7 +27,7 @@ static int	count_words(const char *s, char c)
 		{
 			count++;
 			word_found = 0;
-		}	
+		}
 		else if (s[i] != c)
 			word_found = 1;
 	}
@@ -56,18 +56,19 @@ static char	**create_list(int *count, const char *s, char c)
 	return (list);
 }
 
-char	**ft_split(char const *s, char c, int *count)
+char	**ft_split(char const *s, char c)
 {
 	char	**list;
 	int		i;
 	int		start;
 	int		wc;
+	int		count;
 
-	list = create_list(count, s, c);
+	list = create_list(&count, s, c);
 	if (!list)
 		return (0);
 	ft_init(&i, &start, &wc);
-	while (wc < *count)
+	while (wc < count)
 	{
 		if (s[++i] != c && start == -1)
 			start = i;

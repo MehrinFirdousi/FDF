@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/19 16:55:30 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/11/21 22:09:41 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/11/22 21:19:30 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,40 @@
  * @todo
  * find what error msgs are displayed when:
  * 
- * 		3. file is not given as a param
- * 			OR
- * 		   wrong number of arguments is given
+ * 
  */
+
 // hex to dec converter function
 //	check if given address is null ptr 
 // 	if it is null return white as the color
 //	if not then first comma + 1 and convert the foll string from hex to dec 
 //	and finally set the given comma address to a \0
+
+int	hex_to_dec(char *hex)
+{
+	int	i;
+	int	len;
+	int	sum;
+
+	i = -1;
+	len = ft_strlen(hex);
+	sum = 0;
+	printf("hex: %s, ", hex);
+	if (hex && hex[0])
+	{
+		while(hex[++i])
+		{
+			if (ft_isdigit(hex[i]))
+				sum += (hex[i] - 48) * pow(16, --len);
+			else
+				sum += (hex[i] - 55) * pow(16, --len); // can remove % 16 
+		}
+	}
+	else
+		sum = WHITE;
+	printf("%d\n", sum);
+	return (sum);
+}
 
 t_list	*create_row(char **point_strs, int count_points)
 {
@@ -36,24 +61,37 @@ t_list	*create_row(char **point_strs, int count_points)
 	p = (t_point *)ft_malloc((count_points + 1) * sizeof(t_point));
 	while (point_strs[++i])
 	{
-		color_hex = ft_strchr(point_strs[i], ',') + 1;
-		// p[i].color = hex_to_dec(color_hex);
-		p[i].color = 222;
+		color_hex = ft_strchr(point_strs[i], 'x') + 1;
+		p[i].color = hex_to_dec(color_hex);
 		p[i].value = ft_atoi(point_strs[i]); // free this and see if it works without leaks; because we're changing the \0
 	}
+	p[count_points].color = -1;
 	return (ft_lstnew(p));
 }
 
-void	free_points(void *points)
+void	display_point_strs(char **point_strs)
 {
-	int	i;
+	int i;
 
-	if (points)
+	i = -1;
+	while (point_strs[++i])
+		printf("-%s- ", point_strs[i]);
+	printf("\n");
+}
+
+void	display_row(void *point)
+{
+	t_point *p;
+	int i;
+	
+	p = (t_point *)point;
+	i = -1;
+	while(p[++i].color != -1)
 	{
-		i = -1;
-		while (points + i)
-			free(points + i);
+		printf("%d:", p[i].value);
+		printf("%d ", p[i].color);
 	}
+	printf("\n");
 }
 
 // each list_row will have an array of points, each point will describe x, y, z and color
@@ -67,13 +105,11 @@ t_list *get_rows(char *file_name)
 	t_list *rows_start;
 	t_list *rows_end;
 	
-	printf("file name %s\n", file_name);
-	if (ft_strncmp(ft_strchr(file_name, '.') + 1, "fdf", 4) != 0)
+	if (ft_strncmp(ft_strchr(file_name, '.'), ".fdf", 5) != 0)
 	{
 		ft_printf("File has to be in .fdf format\n");
 		exit(EXIT_FAILURE);
 	}
-
 	fd = open(file_name, O_RDONLY);
 	if (fd == -1)
 	{
@@ -81,42 +117,34 @@ t_list *get_rows(char *file_name)
 		exit(EXIT_FAILURE);
 	}
 	row = get_next_line(fd);
-	point_strs = ft_split(row, ' ', &count_points);
+	point_strs = ft_split2(row, " \n", &count_points);
 	rows_start = create_row(point_strs, count_points);
+	// ft_lstadd_back(&rows_start, create_row(point_strs, count_points));
+	
+	rows_end = rows_start;
+	// ft_lstiter(rows_start, &display_row);
 	free(row);
 	ft_free_strs(point_strs);
-	rows_end = rows_start;
 	row = get_next_line(fd);
 	while (row)
 	{
-		point_strs = ft_split(row, ' ', &new_count);
+		point_strs = ft_split2(row, " \n", &new_count);
 		if (new_count != count_points)
 		{
 			ft_printf("Found wrong line length. Exiting.\n");
 			close(fd);
 			free(row);
 			ft_free_strs(point_strs);
-			ft_lstclear(&rows_start, &free_points);
+			ft_lstclear(&rows_start, &free);
 			exit(EXIT_FAILURE);
 		}
+		// ft_lstadd_back(&rows_start, create_row(point_strs, new_count));
 		rows_end->next = create_row(point_strs, new_count);
 		rows_end = rows_end->next;
 		free(row);
 		ft_free_strs(point_strs);
 		row = get_next_line(fd);
 	}
+	ft_lstiter(rows_start, &display_row);
 	return (rows_start);
 }
-
-// int main(int argc, char **argv)
-// {
-// 	char *line;
-
-// 	int fd = open("testfile", O_RDONLY);
-// 	while ((line = get_next_line(fd)))
-// 	{
-// 		printf("-%s\n", line);
-// 		printf("%d\n", ft_strlen(line));
-// 	}
-// 	return (0);
-// }

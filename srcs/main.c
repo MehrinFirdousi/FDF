@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 15:24:28 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/11/21 22:11:31 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/11/22 21:00:20 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void dda(t_data *img, int X0, int Y0, int X1, int Y1)
     float Y = Y0;
     for (int i = 0; i <= steps; i++) 
 	{
-        my_mlx_pixel_put(img, round(X), round(Y), 0x00cba3ff-i);
+        my_mlx_pixel_put(img, X, Y, 0x00cba3ff-i);
         X += Xinc; // increment in x at each step
         Y += Yinc; // increment in y at each step
     }
@@ -103,13 +103,13 @@ void	draw_circle(t_data *img)
 	float x;
 	float y;
 	
-	for (float i = 0; i <= 100; i+=0.25)
+	for (float i = 0; i <= 15; i+=0.25)
 	{
 		x = 200 * cos(i);
 		y = 200 * sin(i);
 		// printf("%f, %f\n", round(500+x), round(300+y));
 		// my_mlx_pixel_put(img, round(500+x), round(300+y), 0x00FF0000);
-		dda(img, 551, 214, round(500+x), round(300+y));
+		dda(img, 501, 314, round(500+x), round(300+y));
 	}
 }
 
@@ -120,7 +120,7 @@ int	main(int argc, char **argv)
 	
 	if (argc != 2)
 	{
-		ft_printf("Usage : ./fdftest <filename>\n");
+		ft_printf("Usage : %s <filename>\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
 	// void	*mlx;
@@ -139,8 +139,11 @@ int	main(int argc, char **argv)
 	// mlx_put_image_to_window(mlx, mlx_win, img.img, 0, 0);
 	// my_mlx_pixel_put(&img, 501, 314, 0x00FFA000);	
 	// mlx_loop(mlx);
-	t_list *res = get_rows("test_map/basictest.fdf");
-	ft_lstclear(&res, &free_points);
+	
+	// get_rows(argv[1]);
+	t_list *res = get_rows(argv[1]);
+	ft_lstclear(&res, &free);
+	// printf("hextodec: %d\n", hex_to_dec("810202"));
 }
 
 // weird shit
