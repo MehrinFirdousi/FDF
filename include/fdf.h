@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 17:31:41 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/11/22 20:55:20 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/11/28 00:46:02 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ typedef struct	s_point
 	int	x;
 	int	y;
 	int	z;
-	int	value;
 	int	color;
 }				t_point;
 
@@ -37,7 +36,7 @@ typedef struct	s_data
 	int		endian;
 }				t_data;
 
-t_list	*create_row(char **point_strs, int count_points);
+t_list	*create_row(char **point_strs, int count_points, int y);
 void	free_points(void *points);
 t_list	*get_rows(char *file_name);
 int		hex_to_dec(char *hex);
