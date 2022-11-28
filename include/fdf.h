@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 17:31:41 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/11/28 00:46:02 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/11/28 21:50:16 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 # include <mlx.h>
 # include <math.h>
 # include <fcntl.h>
+# define WIN_HEIGHT 1280
+# define WIN_WIDTH 1080
 # define WHITE 16777215
 
 typedef struct	s_point
