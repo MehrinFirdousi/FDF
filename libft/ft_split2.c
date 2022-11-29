@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/14 22:39:22 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/11/22 15:53:37 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/11/29 00:22:51 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,14 @@ static char	**create_list(int *count, const char *s, char *c)
 	return (list);
 }
 
+/**
+ * @brief Same as ft_split except that it can handle more than one separator, and will track the number of words
+ * 
+ * @param s String to be split 
+ * @param c Array of characters where each single character is a separator, if found in the string, will be used to split
+ * @param count Will be modified to store the number of words in the result
+ * @return char** 
+ */
 char	**ft_split2(char const *s, char *c, int *count)
 {
 	char	**list;

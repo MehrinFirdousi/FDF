@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/19 16:55:30 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/11/28 22:10:40 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/11/29 01:32:19 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,8 @@ t_list	*create_row(char **point_strs, int count_points, int y)
 		color_hex = ft_strchr(point_strs[i], 'x');
 		p[i].color = hex_to_dec(color_hex);
 		p[i].z = ft_atoi(point_strs[i]);
-		p[i].x = i * 85;
-		p[i].y = y * 85;
+		p[i].x = i;
+		p[i].y = y;
 	}
 	p[count_points].color = -1;
 	return (ft_lstnew(p));
@@ -79,16 +79,27 @@ void	display_point_strs(char **point_strs)
 	printf("\n");
 }
 
-// each list_row will have an array of points, each point will describe x, y, z and color
-t_list *get_rows(char *file_name)
+int	calc_scale_factor(int row_count, int col_count)
+{
+	int w_factor;
+	int h_factor;
+
+	w_factor = WIN_WIDTH / col_count;
+	h_factor = WIN_HEIGHT / row_count;
+	if (w_factor < h_factor)
+		return (w_factor);
+	return (h_factor);
+}
+
+// each list row will have an array of points, each point will describe x, y, z and color
+int	get_coordinates(char *file_name, t_list **lst)
 {
 	int		fd;
-	int		y;
 	char	*row;
 	char	**point_strs;
-	int		count_points;
+	int		row_count;
+	int		col_count;
 	int		new_count;
-	t_list *rows_start;
 	t_list *rows_end;
 	
 	if (ft_strncmp(ft_strchr(file_name, '.'), ".fdf", 5) != 0)
@@ -102,20 +113,20 @@ t_list *get_rows(char *file_name)
 		ft_printf("File does not exist\n");
 		exit(EXIT_FAILURE);
 	}
-	y = 0;
+	row_count = 0;
 	row = get_next_line(fd);
-	point_strs = ft_split2(row, " \n", &count_points);
-	printf("width divided: %d\n", WIN_WIDTH / count_points);
-	rows_start = create_row(point_strs, count_points, y++);
+	point_strs = ft_split2(row, " \n", &col_count);
+	
 	// ft_lstadd_back(&rows_start, create_row(point_strs, count_points, y++));
-	rows_end = rows_start;
+	*lst = create_row(point_strs, col_count, row_count++);
+	rows_end = *lst;
 	free(row);
 	ft_free_strs(point_strs);
 	row = get_next_line(fd);
 	while (row)
 	{
 		point_strs = ft_split2(row, " \n", &new_count);
-		if (new_count != count_points)
+		if (new_count != col_count)
 		{
 			ft_printf("Found wrong line length. Exiting.\n");
 			while (row) // to read till the end 
@@ -125,17 +136,16 @@ t_list *get_rows(char *file_name)
 			}
 			close(fd);
 			ft_free_strs(point_strs);
-			ft_lstclear(&rows_start, &free);
+			ft_lstclear(lst, &free);
 			exit(EXIT_FAILURE);
 		}
 		// ft_lstadd_back(&rows_start, create_row(point_strs, new_count, y++));
-		rows_end->next = create_row(point_strs, new_count, y++);
+		rows_end->next = create_row(point_strs, new_count, row_count++);
 		rows_end = rows_end->next;
 		free(row);
 		ft_free_strs(point_strs);
 		row = get_next_line(fd);
 	}
-	printf("height divided: %d\n", WIN_HEIGHT/ (y + 1));
 	close(fd);
-	return (rows_start);
+	return (calc_scale_factor(row_count, col_count));
 }

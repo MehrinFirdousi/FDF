@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 17:31:41 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/11/28 21:50:16 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/11/29 01:32:54 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@
 # include <mlx.h>
 # include <math.h>
 # include <fcntl.h>
-# define WIN_HEIGHT 1280
-# define WIN_WIDTH 1080
+# define WIN_WIDTH 1920
+# define WIN_HEIGHT 1080
 # define WHITE 16777215
 
 typedef struct	s_point
@@ -40,7 +40,7 @@ typedef struct	s_data
 
 t_list	*create_row(char **point_strs, int count_points, int y);
 void	free_points(void *points);
-t_list	*get_rows(char *file_name);
+int		get_coordinates(char *file_name, t_list **lst);
 int		hex_to_dec(char *hex);
 
 #endif
