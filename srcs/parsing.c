@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/19 16:55:30 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/11/29 01:32:19 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/01 22:24:07 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,6 @@
  * make get_rows return row_len and col_len ?
  * 
  */
-
-// hex to dec converter function
-//	check if given address is null ptr 
-// 	if it is null return white as the color
-//	if not then first comma + 1 and convert the foll string from hex to dec 
-//	and finally set the given comma address to a \0
 
 int	hex_to_dec(char *hex)
 {

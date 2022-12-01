@@ -36,8 +36,8 @@ NAME		= libft.a
 
 CC			= gcc
 
-#CFLAGS		= -Wall -Wextra -Werror -Ofast
-CFLAGS		= -Wall -Wextra -Werror
+CFLAGS		= -Wall -Wextra -Werror -Ofast
+# CFLAGS		= -Wall -Wextra -Werror
 
 .c.o:
 			${CC} ${CFLAGS} -c $< -o ${<:.c=.o} -I ${HEADER}
