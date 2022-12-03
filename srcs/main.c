@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 15:24:28 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/02 02:00:44 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/03 19:41:18 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,31 +102,52 @@ void	display_row_3d(void *points) // util only - delete later
 }
 
 
-void	transform_3d(t_point *point, double sq2, double sq6, int scale)
+
+void	transform_3d_old(t_point *point, double sq2, double sq6, int scale)
 {
+	int z_scaled;
+	
 	point->x_3d = point->x * scale;
 	point->y_3d = point->y * scale;
-	int z = point->z * scale;
-	// point->y_3d = (point->y_3d - z) / sq2; -- works kinda
-	// point->x_3d = (point->y_3d + 2 * point->x_3d + z) / sq6; --
+	z_scaled = point->z * scale;
+	point->y_3d = (point->y_3d - z_scaled) / sq2; 
+	point->x_3d = (point->y_3d + 2 * point->x_3d + z_scaled) / sq6; // works for now but not really a fix
 	// point->x_3d = (point->x_3d - z) / sq2;
 	// point->y_3d = (point->x_3d + 2 * point->y_3d + z) / sq6;
+}
+
+// rotation matrices used are for right-handed coordinate system i.e., the one we have on the fdf window
+void	transform_3d(t_point *point, double sq2, double sq6, int scale)
+{
 	(void)sq2;
 	(void)sq6;
+	int z_scaled;
 	double a;
 	double b;
 	double sina, sinb, cosa, cosb;
 	
-	a = asin(tan(30));
-	b = 45;
+	point->x_3d = (point->x * scale) + 1000;
+	point->y_3d = (point->y * scale) + 200;
+	z_scaled = (point->z * scale) + 200;
+	
+	a = asin(tan(0.523599)); // 30 in rad
+	// a = 0.615472907; // 34.264 in rad
+	b = 0.785398; // 45 in rad
 	sina = sin(a);
 	sinb = sin(b);
 	cosa = cos(a);
 	cosb = cos(b);
-	printf("%f %f %f %f %f\n", a, sina, sinb, cosa, cosb);
-	point->x_3d = point->x_3d * cosb - z * sinb;
-	point->y_3d = (point->x_3d * sina * sinb) + (point->y_3d * cosa) + (z * sina * cosb);
-	// printf("(%d, %d, %d) -> (%d, %d)\n", point->x, point->y, point->z, point->x_3d, point->y_3d);
+	// point->x_3d = (point->x_3d * cosb) - (z_scaled * sinb); // x axis 
+	// point->y_3d = (point->x_3d * sina * sinb) + (point->y_3d * cosa) + (z_scaled * sina * cosb); // y axis 
+	
+	// point->x_3d = (point->x_3d * cosb) + (z_scaled * sinb); // x axis - counterclockwise
+	// point->y_3d = (point->x_3d * sina * sinb) + (point->y_3d * cosa) - (z_scaled * sina * cosb); // y axis 
+	
+	point->x_3d = (point->x_3d * cosb) - (point->y_3d * sinb); // along x axis - counterclockwise
+	point->y_3d = (point->x_3d * sinb * cosa) + (point->y_3d * cosa * cosb) - (z_scaled * sina); // along z axis
+
+	// point->x_3d = (point->x_3d * cosa * cosb) - (point->y_3d * sinb * cosa) - (z_scaled * sina); // along y axis - counterclockwise
+	// point->y_3d = (point->x_3d * sinb) + (point->y_3d * cosb); // along z axis
 }
 
 void	transform_2d(t_point *point, int scale)
@@ -226,7 +247,7 @@ void	transform_all(t_list *lst, int scale)
 	}
 }
 
-/*void	mlx_set_up(t_mlx *mlx, t_data *img)
+void	mlx_set_up(t_mlx *mlx, t_data *img)
 {
 	mlx->mlx = mlx_init();
 	mlx->win = mlx_new_window(mlx->mlx, WIN_WIDTH, WIN_HEIGHT, "FDF");
@@ -248,7 +269,7 @@ int	key_handler(int keycode, t_mlx *vars, t_data *img, t_list *res, int scale)
 	}
 	(void)img;
 	return (0);
-}*/
+}
 
 int	main(int argc, char **argv)
 {
@@ -257,25 +278,25 @@ int	main(int argc, char **argv)
 		ft_printf("Usage : %s <filename>\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
-	// t_mlx	mlx;
-	// t_data	img;
+	t_mlx	mlx;
+	t_data	img;
 	
-	// mlx_set_up(&mlx, &img);
+	mlx_set_up(&mlx, &img);
 	
 	t_list *lst;
 	int		scale;
 	
 	scale = get_coordinates(argv[1], &lst);
 	printf("scale = %d\n", scale);
-	ft_lstiter(lst, &display_row);
-	// put_coordinates(&img, res, scale);
-	transform_all(lst, scale);
-	printf("\n");
-	ft_lstiter(lst, &display_row_3d);
+	// ft_lstiter(lst, &display_row);
+	put_coordinates(&img, lst, scale);
+	// transform_all(lst, scale);
+	// printf("\n");
+	// ft_lstiter(lst, &display_row_3d);
 	ft_lstclear(&lst, &free);
 	
-	// mlx_hook(mlx.win, 2, 1L<<0, key_handler, &mlx);
-	// mlx_put_image_to_window(mlx.mlx, mlx.win, img.img, 0, 0);
-	// mlx_loop(mlx.mlx);
+	mlx_hook(mlx.win, 2, 1L<<0, key_handler, &mlx);
+	mlx_put_image_to_window(mlx.mlx, mlx.win, img.img, 0, 0);
+	mlx_loop(mlx.mlx);
 }
 

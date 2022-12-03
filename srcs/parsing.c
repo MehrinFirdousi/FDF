@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/19 16:55:30 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/01 22:24:07 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/03 19:43:30 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
  * @todo
  * leak from gnl buffer - should we fix?
  * make get_rows return row_len and col_len ?
- * 
+ * z projection is not straight 
  */
 
 int	hex_to_dec(char *hex)
