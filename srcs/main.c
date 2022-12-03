@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 15:24:28 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/01 23:11:51 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/02 02:00:44 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void dda(t_data *img, t_point p1, t_point p2)
     }
 }
 
-void	display_row(void *points)
+void	display_row(void *points) // util only - delete later
 {
 	t_point *p;
 	int i;
@@ -86,15 +86,46 @@ void	display_row(void *points)
 	printf("\n");
 }
 
+void	display_row_3d(void *points) // util only - delete later
+{
+	t_point *p;
+	int i;
+	
+	p = (t_point *)points;
+	i = -1;
+	while(p[++i].color != -1)
+	{
+		printf("%d,", p[i].x_3d);
+		printf("%d\t", p[i].y_3d);
+	}
+	printf("\n");
+}
+
+
 void	transform_3d(t_point *point, double sq2, double sq6, int scale)
 {
 	point->x_3d = point->x * scale;
 	point->y_3d = point->y * scale;
-	int temp = point->z * scale;
-	point->y_3d = (point->y_3d - temp) / sq2;
-	point->x_3d = (point->y_3d + 2 * point->x_3d + temp) / sq6;
-	// point->x_3d = (point->x - point->z) / sq2;
-	// point->y_3d = (point->x + 2 * point->y + point->z) / sq6;
+	int z = point->z * scale;
+	// point->y_3d = (point->y_3d - z) / sq2; -- works kinda
+	// point->x_3d = (point->y_3d + 2 * point->x_3d + z) / sq6; --
+	// point->x_3d = (point->x_3d - z) / sq2;
+	// point->y_3d = (point->x_3d + 2 * point->y_3d + z) / sq6;
+	(void)sq2;
+	(void)sq6;
+	double a;
+	double b;
+	double sina, sinb, cosa, cosb;
+	
+	a = asin(tan(30));
+	b = 45;
+	sina = sin(a);
+	sinb = sin(b);
+	cosa = cos(a);
+	cosb = cos(b);
+	printf("%f %f %f %f %f\n", a, sina, sinb, cosa, cosb);
+	point->x_3d = point->x_3d * cosb - z * sinb;
+	point->y_3d = (point->x_3d * sina * sinb) + (point->y_3d * cosa) + (z * sina * cosb);
 	// printf("(%d, %d, %d) -> (%d, %d)\n", point->x, point->y, point->z, point->x_3d, point->y_3d);
 }
 
@@ -174,7 +205,28 @@ void	put_coordinates_2d(t_data *img, t_list *lst, int scale)
 		dda(img, p1[i], p1[i + 1]);
 }
 
-void	mlx_set_up(t_mlx *mlx, t_data *img)
+void	transform_all(t_list *lst, int scale)
+{
+	t_list	*node;
+	t_point *p;
+	double	sq2;
+	double	sq6;
+	int i;
+
+	node = lst;
+	sq2 = sqrt(2);
+	sq6 = sqrt(6);
+	while (node)
+	{
+		p = (t_point *)node->content;
+		i = -1;
+		while(p[++i].color != -1)
+			transform_3d(&p[i], sq2, sq6, scale);
+		node = node->next;
+	}
+}
+
+/*void	mlx_set_up(t_mlx *mlx, t_data *img)
 {
 	mlx->mlx = mlx_init();
 	mlx->win = mlx_new_window(mlx->mlx, WIN_WIDTH, WIN_HEIGHT, "FDF");
@@ -196,36 +248,34 @@ int	key_handler(int keycode, t_mlx *vars, t_data *img, t_list *res, int scale)
 	}
 	(void)img;
 	return (0);
-}
+}*/
 
 int	main(int argc, char **argv)
 {
-	(void)argc;
-	(void)argv;
-	
 	if (argc != 2)
 	{
 		ft_printf("Usage : %s <filename>\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
-	t_mlx	mlx;
-	t_data	img;
+	// t_mlx	mlx;
+	// t_data	img;
 	
-	// initializing a window and making it remain open 
-	mlx_set_up(&mlx, &img);
+	// mlx_set_up(&mlx, &img);
 	
-	t_list *res;
-	int scale;
+	t_list *lst;
+	int		scale;
 	
-	scale = get_coordinates(argv[1], &res);
+	scale = get_coordinates(argv[1], &lst);
 	printf("scale = %d\n", scale);
-	// ft_lstiter(res, &display_row);
-	put_coordinates(&img, res, scale);
-	// ft_lstiter(res, &display_row);
-	ft_lstclear(&res, &free);
+	ft_lstiter(lst, &display_row);
+	// put_coordinates(&img, res, scale);
+	transform_all(lst, scale);
+	printf("\n");
+	ft_lstiter(lst, &display_row_3d);
+	ft_lstclear(&lst, &free);
 	
-	mlx_hook(mlx.win, 2, 1L<<0, key_handler, &mlx);
-	mlx_put_image_to_window(mlx.mlx, mlx.win, img.img, 0, 0);
-	mlx_loop(mlx.mlx);
+	// mlx_hook(mlx.win, 2, 1L<<0, key_handler, &mlx);
+	// mlx_put_image_to_window(mlx.mlx, mlx.win, img.img, 0, 0);
+	// mlx_loop(mlx.mlx);
 }
 

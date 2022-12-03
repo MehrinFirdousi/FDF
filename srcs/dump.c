@@ -16,10 +16,9 @@ void	transform_all(t_list *lst, int scale)
 		p = (t_point *)node->content;
 		i = -1;
 		while(p[++i].color != -1)
-			transform(&p[i], sq2, sq6, scale);
+			transform_3d(&p[i], sq2, sq6, scale);
 		node = node->next;
 	}
-	
 }
 
 void	put_points(t_list *lst, t_data *img)

@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 17:31:41 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/01 22:42:39 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/02 01:52:45 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 # define FDF_H
 # include "libft.h"
-# include <mlx.h>
+// # include <mlx.h>
 # include <math.h>
 # include <fcntl.h>
 # define WIN_WIDTH 1280
