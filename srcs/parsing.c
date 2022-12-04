@@ -43,7 +43,7 @@ int	hex_to_dec(char *hex)
 	return (WHITE);
 }
 
-t_list	*create_row(char **point_strs, int count_points, int y)
+t_list	*create_row(char **point_strs, int count_points, int y, int *z_max)
 {
 	t_point	*p;
 	char	*color_hex;
@@ -58,6 +58,8 @@ t_list	*create_row(char **point_strs, int count_points, int y)
 		p[i].z = ft_atoi(point_strs[i]);
 		p[i].x = i;
 		p[i].y = y;
+		if (p[i].z > *z_max)
+			*z_max = p[i].z;
 	}
 	p[count_points].color = -1;
 	return (ft_lstnew(p));
@@ -73,16 +75,23 @@ void	display_point_strs(char **point_strs)
 	printf("\n");
 }
 
-int	calc_scale_factor(int row_count, int col_count)
+int	calc_scale_factor(int row_count, int col_count, int z_max)
 {
-	int w_factor;
-	int h_factor;
+	int w;
+	int h;
+	int	z;
 
-	w_factor = WIN_WIDTH / col_count;
-	h_factor = WIN_HEIGHT / row_count;
-	if (w_factor < h_factor)
-		return (w_factor);
-	return (h_factor);
+	w = WIN_WIDTH / col_count;
+	h = WIN_HEIGHT / row_count;
+	z = __INT_MAX__;
+	if (z_max > 0)
+		z = WIN_HEIGHT / ((float)z_max * 1.1);
+	printf("w %d, h %d, z %d\n", w, h, z);
+	if (w <= h && w <= z)
+		return (w);
+	else if (h <= w && h <= z)
+		return (h);
+	return (z);
 }
 
 // each list row will have an array of points, each point will describe x, y, z and color
@@ -94,6 +103,7 @@ int	get_coordinates(char *file_name, t_list **lst)
 	int		row_count;
 	int		col_count;
 	int		new_count;
+	int		z_max;
 	t_list *rows_end;
 	
 	if (ft_strncmp(ft_strchr(file_name, '.'), ".fdf", 5) != 0)
@@ -110,9 +120,10 @@ int	get_coordinates(char *file_name, t_list **lst)
 	row_count = 0;
 	row = get_next_line(fd);
 	point_strs = ft_split2(row, " \n", &col_count);
+	z_max = 0;
 	
 	// ft_lstadd_back(&rows_start, create_row(point_strs, count_points, y++));
-	*lst = create_row(point_strs, col_count, row_count++);
+	*lst = create_row(point_strs, col_count, row_count++, &z_max);
 	rows_end = *lst;
 	free(row);
 	ft_free_strs(point_strs);
@@ -134,12 +145,12 @@ int	get_coordinates(char *file_name, t_list **lst)
 			exit(EXIT_FAILURE);
 		}
 		// ft_lstadd_back(&rows_start, create_row(point_strs, new_count, y++));
-		rows_end->next = create_row(point_strs, new_count, row_count++);
+		rows_end->next = create_row(point_strs, new_count, row_count++, &z_max);
 		rows_end = rows_end->next;
 		free(row);
 		ft_free_strs(point_strs);
 		row = get_next_line(fd);
 	}
 	close(fd);
-	return (calc_scale_factor(row_count, col_count));
+	return (calc_scale_factor(row_count, col_count, z_max));
 }

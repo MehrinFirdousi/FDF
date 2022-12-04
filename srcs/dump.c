@@ -44,6 +44,100 @@ void	put_points(t_list *lst, t_data *img)
 	}	
 }
 
+// only for testing, remove
+void	transform_all(t_mlx *mlx)
+{
+	t_list	*node;
+	t_point *p;
+	int i;
+
+	node = mlx->lst;
+	while (node)
+	{
+		p = (t_point *)node->content;
+		i = -1;
+		while(p[++i].color != -1)
+			transform_3d(&p[i], mlx->a, mlx->b, mlx->scale, mlx->x_offset, mlx->y_offset);
+		node = node->next;
+	}
+}
+
+void	transform_3d_old(t_point *point, double sq2, double sq6, int scale)
+{
+	int z_scaled;
+	
+	point->x_3d = point->x * scale;
+	point->y_3d = point->y * scale;
+	z_scaled = point->z * scale;
+	point->y_3d = (point->y_3d - z_scaled) / sq2; 
+	point->x_3d = (point->y_3d + 2 * point->x_3d + z_scaled) / sq6; // works for now but not really a fix
+	// point->x_3d = (point->x_3d - z) / sq2;
+	// point->y_3d = (point->x_3d + 2 * point->y_3d + z) / sq6;
+}
+
+void	display_row(void *points) // util only - delete later
+{
+	t_point *p;
+	int i;
+	
+	p = (t_point *)points;
+	i = -1;
+	while(p[++i].color != -1)
+	{
+		printf("%d,", p[i].x);
+		printf("%d,", p[i].y);
+		if (p[i].color != WHITE)
+			printf("\033[1;31m");
+		printf("%d\t", p[i].z);
+		printf("\033[0m");
+		// printf("%d\t", p[i].color);
+	}
+	printf("\n");
+}
+
+void	display_row_3d(void *points) // util only - delete later
+{
+	t_point *p;
+	int i;
+	
+	p = (t_point *)points;
+	i = -1;
+	while(p[++i].color != -1)
+	{
+		printf("%d,", p[i].x_3d);
+		printf("%d\t", p[i].y_3d);
+	}
+	printf("\n");
+}
+
+void	clear_image(t_data *img)
+{
+	int		x;
+	int		y;
+	char	*dst;
+	x = -1;
+	while (++x < WIN_WIDTH)
+	{
+		y = -1;
+		while (++y < WIN_HEIGHT)
+		{
+			dst = img->addr + (y * img->line_length + x * (img->bits_per_pixel / 8));
+			*(unsigned int*)dst = 0;
+		}
+	}
+}
+
+// ------------------------------------- alternate rotation matrices -------------------------------------
+// point->x_3d = (point->x_3d * cosb) - (z_scaled * sinb); // x axis 
+// point->y_3d = (point->x_3d * sina * sinb) + (point->y_3d * cosa) + (z_scaled * sina * cosb); // y axis 
+
+// point->x_3d = (point->x_3d * cosb) + (z_scaled * sinb); // x axis - counterclockwise
+// point->y_3d = (point->x_3d * sina * sinb) + (point->y_3d * cosa) - (z_scaled * sina * cosb); // y axis 
+
+// point->x_3d = (point->x_3d * cosb) - (point->y_3d * sinb); // along x axis - counterclockwise
+// point->y_3d = (point->x_3d * sinb * cosa) + (point->y_3d * cosa * cosb) - (z_scaled * sina); // along z axis
+
+
 // weird shit
 
 // void	draw_circle(t_data *img)
@@ -61,7 +155,7 @@ void	put_points(t_list *lst, t_data *img)
 // 	}
 // }
 
-// void	dda2(t_data *img, double x1, double x2, double y1, double y2)
+// void	dda2(t_data *img, t_point p1, t_point p2)
 // {
 // 	float	steps;
 // 	float	dy;
@@ -70,17 +164,17 @@ void	put_points(t_list *lst, t_data *img)
 // 	float	yi;
 // 	int		i;
 	
-// 	dx = x2 - x1;
-// 	dy = y2 - y1;
+// 	dx = p2.x_3d - p1.x_3d;
+// 	dy = p2.y_3d - p1.y_3d;
 // 	steps = fabs(dx) > fabs(dy) ? fabs(dx) : fabs(dy);
 // 	xi = dx / steps;
 // 	yi = dy / steps;
 // 	i = -1;
 // 	while (++i <= steps)
 // 	{
-// 		x1 += xi;
-// 		y1 += yi;
-// 		my_mlx_pixel_put(img, x1, y1,  0x00FFC000-i);
+// 		p1.x_3d += xi;
+// 		p1.y_3d += yi;
+// 		my_mlx_pixel_put(img, p1.x_3d, p1.y_3d,  p1.color);
 // 	}
 // }
 
