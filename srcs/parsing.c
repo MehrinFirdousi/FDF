@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/19 16:55:30 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/03 19:43:30 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/05 17:21:19 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	hex_to_dec(char *hex)
 
 	i = -1;
 	sum = 0;
-	if (hex)
+	if (hex[0])
 	{
 		hex++;
 		len = ft_strlen(hex);
@@ -58,8 +58,8 @@ t_list	*create_row(char **point_strs, int count_points, int y, int *z_max)
 		p[i].z = ft_atoi(point_strs[i]);
 		p[i].x = i;
 		p[i].y = y;
-		if (p[i].z > *z_max)
-			*z_max = p[i].z;
+		if (abs(p[i].z) > *z_max)
+			*z_max = abs(p[i].z);
 	}
 	p[count_points].color = -1;
 	return (ft_lstnew(p));
@@ -95,7 +95,7 @@ int	calc_scale_factor(int row_count, int col_count, int z_max)
 }
 
 // each list row will have an array of points, each point will describe x, y, z and color
-int	get_coordinates(char *file_name, t_list **lst)
+void	get_coordinates(char *file_name, t_list **lst, t_mlx *mlx)
 {
 	int		fd;
 	char	*row;
@@ -152,5 +152,8 @@ int	get_coordinates(char *file_name, t_list **lst)
 		row = get_next_line(fd);
 	}
 	close(fd);
-	return (calc_scale_factor(row_count, col_count, z_max));
+	mlx->scale = calc_scale_factor(row_count, col_count, z_max);
+	mlx->x_max = col_count;
+	mlx->y_max = row_count;
+	mlx->z_max = z_max;
 }

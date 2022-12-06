@@ -110,22 +110,7 @@ void	display_row_3d(void *points) // util only - delete later
 	printf("\n");
 }
 
-void	clear_image(t_data *img)
-{
-	int		x;
-	int		y;
-	char	*dst;
-	x = -1;
-	while (++x < WIN_WIDTH)
-	{
-		y = -1;
-		while (++y < WIN_HEIGHT)
-		{
-			dst = img->addr + (y * img->line_length + x * (img->bits_per_pixel / 8));
-			*(unsigned int*)dst = 0;
-		}
-	}
-}
+
 
 // ------------------------------------- alternate rotation matrices -------------------------------------
 // point->x_3d = (point->x_3d * cosb) - (z_scaled * sinb); // x axis 
