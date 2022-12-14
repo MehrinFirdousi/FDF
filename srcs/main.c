@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 15:24:28 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/06 21:00:04 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/14 21:15:39 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,6 +153,7 @@ void	mlx_set_up(t_mlx *mlx, t_data *img)
 	mlx->img = img;
 	mlx->a = 35.264;
 	mlx->b = 45;
+	mlx->c = 0;
 	mlx->x_offset = 0;
 	// mlx->y_offset = WIN_HEIGHT * 0.85;
 	mlx->y_offset = 0;
@@ -206,23 +207,38 @@ int	key_hold_handler(int keycode, t_mlx *vars)
 	if (keycode == RIGHT)
 	{
 		vars->b = fmod(vars->b + ROT_ANGLE, 360);
-		// redraw_image(vars, transform_3d_xy);
-		// return (0);
+		printf("a =  %lf, b = %lf\n", vars->a, vars->b);
+		redraw_image(vars, rotate);
+		return (0);
 	}
 	else if (keycode == LEFT)
 	{
 		vars->b = fmod(vars->b - ROT_ANGLE, 360);
-		// redraw_image(vars, transform_3d_xy);
-		// return (0);
+		printf("a =  %lf, b = %lf\n", vars->a, vars->b);
+		redraw_image(vars, rotate);
+		return (0);
 	}
 	else if (keycode == DOWN)
 	{
 		vars->a = fmod(vars->a - ROT_ANGLE, 360);
-		// redraw_image(vars, rotate_x);
-		// return (0);
+		printf("a =  %lf, b = %lf\n", vars->a, vars->b);
+		redraw_image(vars, rotate);
+		return (0);
 	}
 	else if (keycode == UP)
+	{
 		vars->a = fmod(vars->a + ROT_ANGLE, 360);
+		printf("a =  %lf, b = %lf\n", vars->a, vars->b);
+		redraw_image(vars, rotate);
+		return (0);
+	}
+	else if (keycode == Z)
+	{
+		vars->c = fmod(vars->c + ROT_ANGLE, 360);
+		printf("a =  %lf, b = %lf, c = %lf\n", vars->a, vars->b, vars->c);
+		redraw_image(vars, rotate);
+		return (0);
+	}
 	else if (keycode == PLUS)
 		vars->scale++;
 	else if (keycode == MINUS && vars->scale > 1)
@@ -242,6 +258,21 @@ int	key_hold_handler(int keycode, t_mlx *vars)
 	return (0);
 }
 
+void display_matrix(double m[3][3])
+{
+	int i;
+	int j;
+
+	i = -1;
+	while (++i < 3)
+	{
+		j = -1;
+		while (++j < 3)
+			printf("%lf ", m[i][j]);
+		printf("\n");
+	}
+}
+
 int	main(int argc, char **argv)
 {
 	if (argc != 2)
@@ -255,12 +286,13 @@ int	main(int argc, char **argv)
 	get_coordinates(argv[1], &mlx.lst, &mlx);
 	mlx_set_up(&mlx, &img);
 	printf("scale = %d\n", mlx.scale);
-	put_coordinates(&mlx, transform_3d);
 	
+	put_coordinates(&mlx, transform_3d);
 	mlx_key_hook(mlx.win, key_click_handler, &mlx);
 	mlx_hook(mlx.win, 2, 1L<<0, key_hold_handler, &mlx);
 	mlx_put_image_to_window(mlx.mlx, mlx.win, img.img, 0, 0);
 	mlx_loop(mlx.mlx);
 	return (0);
+	
 }
 
