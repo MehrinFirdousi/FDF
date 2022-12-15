@@ -6,7 +6,7 @@
 #    By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/17 15:25:59 by mfirdous          #+#    #+#              #
-#    Updated: 2022/11/29 15:05:14 by mfirdous         ###   ########.fr        #
+#    Updated: 2022/12/12 13:25:51 by mfirdous         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,41 +20,42 @@ HEADER	=	include
 
 LIBFT	=	libft/libft.a
 
-MLX		=	mlx_linux/libmlx.a
+MLX		=	libmlx.dylib
 
 CC		=	gcc
 
-MLX_DIR		=	mlx_linux
+MLX_DIR		=	mlx
 
-CFLAGS	=	 -Wall -Wextra -Werror -I ${HEADER} -I/usr/include -I ${MLX_DIR} -O3 -Ofast
+CFLAGS	=	 -Wall -Wextra -Werror -I ${HEADER} -I ${MLX_DIR} -Ofast
 
-MLX_FLAGS	= -Lmlx_linux -lmlx_Linux -L/usr/lib -Imlx_linux 
+MLX_FLAGS	= -L. -lmlx -framework OpenGL -framework AppKit
 
 .c.o:
 			${CC} ${CFLAGS} -c $< -o ${<:.c=.o} 
 
 ${NAME}:	${LIBFT} ${MLX} ${OBJS}
-			${CC} ${CFLAGS} ${MLX_FLAGS} ${OBJS} ${LIBFT} ${MLX} -o ${NAME} -lm -lXext -lX11 -lz
+			${CC} ${CFLAGS} ${MLX_FLAGS} ${OBJS} ${LIBFT} -o ${NAME}
 # ${NAME}:	${LIBFT} ${OBJS}
-# 			${CC} ${CFLAGS} ${OBJS} ${LIBFT} -o ${NAME} -lm 
+#			${CC} ${CFLAGS} ${OBJS} ${LIBFT} -o ${NAME} -lm 
 
 ${LIBFT}:	
 			${MAKE} -C libft
 			${MAKE} -C libft bonus
 
 ${MLX}:		
-			${MAKE} -C mlx_linux
-#			mv mlx_linux/libmlx.a .
+			${MAKE} -C mlx
+			mv mlx/libmlx.dylib .
 
 all:		${NAME}
 
 clean:		
 			rm -f ${OBJS}
+			rm -f ${MLX}
 			${MAKE} -C libft clean
-			${MAKE} -C mlx_linux clean
+			${MAKE} -C mlx clean
 
 fclean:		clean
-			rm -f ${NAME}
+			rm -f ${NAME} 
 			${MAKE} -C libft fclean
 
 re:			fclean all

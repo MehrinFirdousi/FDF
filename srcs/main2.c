@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// sorta works 
-
 #include "fdf.h"
 
 void	my_mlx_pixel_put(t_data *data, int x, int y, unsigned int color)
@@ -53,39 +51,11 @@ double	deg_to_rad(double deg)
 }
 
 // rotation matrices used are for right-handed coordinate system i.e., the one we have on the fdf window
-// void	transform_3d(t_point *p, t_mlx *mlx)
-// {
-// 	// int z_scaled;
-// 	double a;
-// 	double b;
-	
-// 	p->x_3d = (p->x * mlx->scale)  - ((mlx->x_max / 2) * mlx->scale);
-// 	p->y_3d = (p->y * mlx->scale)  - ((mlx->y_max / 2) * mlx->scale);
-// 	p->z_3d = (p->z * mlx->scale)  - ((mlx->z_max / 2) * mlx->scale);
-	
-// 	a = deg_to_rad(mlx->a);
-// 	b = deg_to_rad(mlx->b);
-	
-// 	int x = p->x_3d;
-// 	int y = p->y_3d;
-// 	int z = p->z_3d;
-	
-// 	p->x_3d = (x * cos(b)) + (y * sin(b)); // along x axis - clockwise
-// 	p->y_3d = -(x * sin(b) * cos(a)) + (y * cos(a) * cos(b)) + (-z * sin(a)); // along z axis
-// 	p->z_3d = (x * sin(a) * sin(b)) + (y * -sin(a) * cos(b)) + (-z * cos(a)); // along z axis
-
-// 	p->x_3d += mlx->x_offset + ((mlx->x_max / 2) * mlx->scale);
-// 	p->y_3d += mlx->y_offset + ((mlx->y_max / 2) * mlx->scale);
-// 	p->z_3d += ((mlx->z_max / 2) * mlx->scale);
-// 	// point->z_3d += mlx->y_offset + 5 * mlx->scale;
-// }
-
-// rotation matrices used are for right-handed coordinate system i.e., the one we have on the fdf window
 void	transform_3d(t_point *p, t_mlx *mlx)
 {
+	// int z_scaled;
 	double a;
 	double b;
-	double c;
 	
 	p->x_3d = (p->x * mlx->scale)  - ((mlx->x_max / 2) * mlx->scale);
 	p->y_3d = (p->y * mlx->scale)  - ((mlx->y_max / 2) * mlx->scale);
@@ -93,21 +63,45 @@ void	transform_3d(t_point *p, t_mlx *mlx)
 	
 	a = deg_to_rad(mlx->a);
 	b = deg_to_rad(mlx->b);
-	c = deg_to_rad(mlx->c);
 	
 	int x = p->x_3d;
 	int y = p->y_3d;
 	int z = p->z_3d;
 	
-	p->x_3d = (x * cos(b) * cos(c)) + (y * sin(b)) + (-z * -sin(c) * cos(b)); // along x axis - clockwise
-	p->y_3d = (x * ((-sin(b) * cos(a) * cos(c)) + (sin(a) * sin(c)))) + (y * cos(a) * cos(b)) + (-z * ((sin(b) * cos(a) * sin(c)) + (sin(a) * cos(c)))); // along z axis
-	p->z_3d = (x * sin(a) * sin(b) * cos(c)) + (y * -sin(a) * cos(b)) + (-z * ((-sin(a) * sin(b) * sin(c)) + (cos(a) * cos(c)))); // along z axis
+	p->x_3d = (x * cos(b)) + (y * sin(b)); // along x axis - clockwise
+	p->y_3d = -(x * sin(b) * cos(a)) + (y * cos(a) * cos(b)) + (-z * sin(a)); // along z axis
+	p->z_3d = (x * sin(a) * sin(b)) + (y * -sin(a) * cos(b)) + (-z * cos(a)); // along z axis
 
 	p->x_3d += mlx->x_offset + ((mlx->x_max / 2) * mlx->scale);
 	p->y_3d += mlx->y_offset + ((mlx->y_max / 2) * mlx->scale);
 	p->z_3d += ((mlx->z_max / 2) * mlx->scale);
 	// point->z_3d += mlx->y_offset + 5 * mlx->scale;
 }
+
+/*void	transform_3d_xy(t_point *point, t_mlx * mlx)
+{
+	int z_scaled;
+	double a;
+	double b;
+	double sina, sinb, cosa, cosb;
+	
+	point->x_3d = (point->x * mlx->scale) + 100;
+	point->y_3d = (point->y * mlx->scale) + 100;
+	z_scaled = (point->z * mlx->scale) + 100;
+	// a = asin(tan(deg_to_rad(30)));
+	a = deg_to_rad(mlx->a);
+	b = deg_to_rad(mlx->b);
+	sina = sin(a);
+	sinb = sin(b);
+	cosa = cos(a);
+	cosb = cos(b);
+
+	point->x_3d = (point->x_3d * cosb) + (z_scaled * sinb); // x axis - counterclockwise
+	point->y_3d = (point->x_3d * sina * sinb) + (point->y_3d * cosa) - (z_scaled * sina * cosb); // y axis 
+	
+	point->x_3d += mlx->x_offset - 100;
+	point->y_3d += mlx->y_offset - 100;
+}*/
 
 void	transform_2d(t_point *point, t_mlx *mlx)
 {
@@ -183,12 +177,13 @@ void	clear_image(t_data *img)
 	}
 }
 
-void	redraw_image(t_mlx *mlx, void (*transform)(t_point *, t_mlx *))
+void	redraw_image(t_mlx *mlx, void (*transform)(t_point *, t_mlx *), char axis)
 {
 	mlx_destroy_image(mlx->mlx, mlx->img->img);
 	mlx->img->img = mlx_new_image(mlx->mlx, WIN_WIDTH, WIN_HEIGHT);
 	mlx->img->addr = mlx_get_data_addr(mlx->img->img, &(mlx->img->bits_per_pixel), &(mlx->img->line_length), &(mlx->img->endian));
 	// clear_image(mlx->img);
+	(void)axis;
 	put_coordinates(mlx, transform);
 	mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img->img, 0, 0);
 }
@@ -202,27 +197,70 @@ int	key_click_handler(int keycode, t_mlx *vars)
 		exit(0);
 	}
 	if (keycode == TWO)
-		redraw_image(vars, transform_2d);
+		redraw_image(vars, transform_2d, 'n');
 	if (keycode == THREE)
-		redraw_image(vars, transform_3d);
+		redraw_image(vars, transform_3d, 'n');
 	// printf("keycode = %d\n", keycode);
 	return (0);
 }
 
 int	key_hold_handler(int keycode, t_mlx *vars)
 {
+	// void (*func)(t_point *, t_mlx *);
 	if (keycode == RIGHT)
-		vars->b = fmod(vars->b + ROT_ANGLE, 360);
+	{
+		vars->rx = 0;
+		vars->ry = 5;
+		vars->rz = 0;
+		// vars->b = fmod(vars->b + ROT_ANGLE, 360);
+		redraw_image(vars, rotate_y, 'y');
+		return (0);
+	}
 	else if (keycode == LEFT)
-		vars->b = fmod(vars->b - ROT_ANGLE, 360);
+	{
+		vars->rx = 0;
+		vars->ry = 5;
+		vars->rz = 0;
+		// vars->b = fmod(vars->b - ROT_ANGLE, 360);
+		redraw_image(vars, rotate_y, 'y');
+		return (0);
+	}
 	else if (keycode == DOWN)
-		vars->a = fmod(vars->a - ROT_ANGLE, 360);
+	{
+		vars->rx = 5;
+		vars->ry = 0;
+		vars->rz = 0;
+		// vars->a = fmod(vars->a - ROT_ANGLE, 360);
+		redraw_image(vars, rotate_x, 'x');
+		return (0);
+	}
 	else if (keycode == UP)
-		vars->a = fmod(vars->a + ROT_ANGLE, 360);
+	{
+		vars->rx = 5;
+		vars->ry = 0;
+		vars->rz = 0;
+		// vars->a = fmod(vars->a + ROT_ANGLE, 360);
+		redraw_image(vars, rotate_x, 'x');
+		return (0);
+	}
 	else if (keycode == E)
-		vars->c = fmod(vars->c + ROT_ANGLE, 360);
+	{
+		vars->rx = 0;
+		vars->ry = 0;
+		vars->rz = 5;
+		// vars->c = fmod(vars->c + ROT_ANGLE, 360);
+		redraw_image(vars, rotate_z, 'z');
+		return (0);
+	}
 	else if (keycode == Q)
-		vars->c = fmod(vars->c - ROT_ANGLE, 360);
+	{
+		vars->rx = 0;
+		vars->ry = 0;
+		vars->rz = 5;
+		// vars->c = fmod(vars->c + ROT_ANGLE, 360);
+		redraw_image(vars, rotate_z, 'z');
+		return (0);
+	}
 	else if (keycode == PLUS)
 		vars->scale++;
 	else if (keycode == MINUS && vars->scale > 1)
@@ -237,7 +275,7 @@ int	key_hold_handler(int keycode, t_mlx *vars)
 		vars->x_offset += SPEED;
 	else
 		return (1);
-	redraw_image(vars, transform_3d);
+	redraw_image(vars, transform_3d, 'n');
 	// printf("keycode2 = %d\n", keycode);
 	return (0);
 }

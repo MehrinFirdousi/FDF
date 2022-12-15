@@ -22,7 +22,7 @@
 # define WIN_HEIGHT 920
 # define WHITE 16777215
 # define SPEED 35
-# define ROT_ANGLE 10
+# define ROT_ANGLE 5
 
 # ifdef __APPLE__
 #  define ESC 53
@@ -55,6 +55,8 @@
 #  define A		97
 #  define S		115
 #  define D		100
+#  define Q		113
+#  define E		101
 # endif
 
 typedef struct	s_point
