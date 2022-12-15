@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 17:31:41 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/14 21:15:57 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/15 22:34:13 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # define WIN_HEIGHT 920
 # define WHITE 16777215
 # define SPEED 35
-# define ROT_ANGLE 5
+# define ROT_ANGLE 10
 
 # ifdef __APPLE__
 #  define ESC 53
@@ -38,7 +38,8 @@
 #  define A		0
 #  define S		1
 #  define D		2
-#  define Z		6
+#  define Q		12
+#  define E		14
 
 # else
 #  define ESC	65307
@@ -92,6 +93,9 @@ typedef struct	s_mlx
 	int		x_max;
 	int		y_max;
 	double	r[3][3];
+	int		rx;
+	int		ry;
+	int		rz;
 }				t_mlx;
 
 t_list	*create_row(char **point_strs, int count_points, int y, int *z_max);
@@ -102,5 +106,8 @@ void	transform_3d(t_point *point, t_mlx *mlx);
 double	deg_to_rad(double deg);
 void	matrix_mul(t_mlx *mlx);
 void	rotate(t_point *point, t_mlx *mlx);
+void	rotate_x(t_point *point, t_mlx *mlx);
+void	rotate_y(t_point *p, t_mlx *mlx);
+void	rotate_z(t_point *p, t_mlx *mlx);
 
 #endif
