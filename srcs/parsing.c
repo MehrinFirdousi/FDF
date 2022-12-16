@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/19 16:55:30 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/15 22:32:54 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/16 18:35:25 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,11 +81,11 @@ int	calc_scale_factor(int row_count, int col_count, int z_max)
 	int h;
 	int	z;
 
-	w = WIN_WIDTH / (col_count * 1.6);
-	h = WIN_HEIGHT / (row_count * 1.6);
+	w = WIN_WIDTH / (col_count * 1.4);
+	h = WIN_HEIGHT / (row_count * 1.4);
 	z = __INT_MAX__;
 	if (z_max > 0)
-		z = WIN_HEIGHT / ((float)z_max * 1.6);
+		z = WIN_HEIGHT / ((float)z_max * 1.4);
 	printf("w %d, h %d, z %d\n", w, h, z);
 	if (w <= h && w <= z)
 		return (w);

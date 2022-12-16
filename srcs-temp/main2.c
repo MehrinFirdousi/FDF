@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   main2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 15:24:28 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/15 22:41:27 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/16 13:23:50 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,54 +209,42 @@ int	key_hold_handler(int keycode, t_mlx *vars)
 	// void (*func)(t_point *, t_mlx *);
 	if (keycode == RIGHT)
 	{
-		vars->rx = 0;
-		vars->ry = 5;
-		vars->rz = 0;
+		vars->ry += ROT_ANGLE;
 		// vars->b = fmod(vars->b + ROT_ANGLE, 360);
 		redraw_image(vars, rotate_y, 'y');
 		return (0);
 	}
 	else if (keycode == LEFT)
 	{
-		vars->rx = 0;
-		vars->ry = 5;
-		vars->rz = 0;
+		vars->ry -= ROT_ANGLE;
 		// vars->b = fmod(vars->b - ROT_ANGLE, 360);
 		redraw_image(vars, rotate_y, 'y');
 		return (0);
 	}
 	else if (keycode == DOWN)
 	{
-		vars->rx = 5;
-		vars->ry = 0;
-		vars->rz = 0;
+		vars->rx += ROT_ANGLE;
 		// vars->a = fmod(vars->a - ROT_ANGLE, 360);
 		redraw_image(vars, rotate_x, 'x');
 		return (0);
 	}
 	else if (keycode == UP)
 	{
-		vars->rx = 5;
-		vars->ry = 0;
-		vars->rz = 0;
+		vars->rx -= ROT_ANGLE;
 		// vars->a = fmod(vars->a + ROT_ANGLE, 360);
 		redraw_image(vars, rotate_x, 'x');
 		return (0);
 	}
 	else if (keycode == E)
 	{
-		vars->rx = 0;
-		vars->ry = 0;
-		vars->rz = 5;
+		vars->rz += ROT_ANGLE;
 		// vars->c = fmod(vars->c + ROT_ANGLE, 360);
 		redraw_image(vars, rotate_z, 'z');
 		return (0);
 	}
 	else if (keycode == Q)
 	{
-		vars->rx = 0;
-		vars->ry = 0;
-		vars->rz = 5;
+		vars->rz -= ROT_ANGLE;
 		// vars->c = fmod(vars->c + ROT_ANGLE, 360);
 		redraw_image(vars, rotate_z, 'z');
 		return (0);

@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 15:24:28 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/15 22:41:27 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/16 21:42:39 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,86 +27,57 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, unsigned int color)
 
 void dda(t_data *img, t_point p1, t_point p2)
 {
-    int dx;
-    int dy;
+	int dx;
+	int dy;
  
 	dx = p2.x_3d - p1.x_3d;
 	dy = p2.y_3d - p1.y_3d;
-    int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
- 
-    float Xinc = dx / (float)steps;
-    float Yinc = dy / (float)steps;
- 
-    float X = p1.x_3d;
-    float Y = p1.y_3d;
-    for (int i = 0; i <= steps; i++) 
+	int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
+	
+	float Xinc = dx / (float)steps;
+	float Yinc = dy / (float)steps;
+
+	float X = p1.x_3d;
+	float Y = p1.y_3d;
+	for (int i = 0; i <= steps; i++) 
 	{
-        my_mlx_pixel_put(img, X, Y, p1.color);
-        X += Xinc; // increment in x at each step
-        Y += Yinc; // increment in y at each step
-    }
+		my_mlx_pixel_put(img, X, Y, p1.color);
+		X += Xinc; // increment in x at each step
+		Y += Yinc; // increment in y at each step
+	}
 }
-
-double	deg_to_rad(double deg)
-{
-	return (deg * (M_PI / 180.0));
-}
-
-// rotation matrices used are for right-handed coordinate system i.e., the one we have on the fdf window
-// void	transform_3d(t_point *p, t_mlx *mlx)
-// {
-// 	// int z_scaled;
-// 	double a;
-// 	double b;
-	
-// 	p->x_3d = (p->x * mlx->scale)  - ((mlx->x_max / 2) * mlx->scale);
-// 	p->y_3d = (p->y * mlx->scale)  - ((mlx->y_max / 2) * mlx->scale);
-// 	p->z_3d = (p->z * mlx->scale)  - ((mlx->z_max / 2) * mlx->scale);
-	
-// 	a = deg_to_rad(mlx->a);
-// 	b = deg_to_rad(mlx->b);
-	
-// 	int x = p->x_3d;
-// 	int y = p->y_3d;
-// 	int z = p->z_3d;
-	
-// 	p->x_3d = (x * cos(b)) + (y * sin(b)); // along x axis - clockwise
-// 	p->y_3d = -(x * sin(b) * cos(a)) + (y * cos(a) * cos(b)) + (-z * sin(a)); // along z axis
-// 	p->z_3d = (x * sin(a) * sin(b)) + (y * -sin(a) * cos(b)) + (-z * cos(a)); // along z axis
-
-// 	p->x_3d += mlx->x_offset + ((mlx->x_max / 2) * mlx->scale);
-// 	p->y_3d += mlx->y_offset + ((mlx->y_max / 2) * mlx->scale);
-// 	p->z_3d += ((mlx->z_max / 2) * mlx->scale);
-// 	// point->z_3d += mlx->y_offset + 5 * mlx->scale;
-// }
 
 // rotation matrices used are for right-handed coordinate system i.e., the one we have on the fdf window
 void	transform_3d(t_point *p, t_mlx *mlx)
 {
-	double a;
-	double b;
-	double c;
-	
-	p->x_3d = (p->x * mlx->scale)  - ((mlx->x_max / 2) * mlx->scale);
-	p->y_3d = (p->y * mlx->scale)  - ((mlx->y_max / 2) * mlx->scale);
-	p->z_3d = (p->z * mlx->scale)  - ((mlx->z_max / 2) * mlx->scale);
-	
-	a = deg_to_rad(mlx->a);
-	b = deg_to_rad(mlx->b);
-	c = deg_to_rad(mlx->c);
-	
-	int x = p->x_3d;
-	int y = p->y_3d;
-	int z = p->z_3d;
-	
-	p->x_3d = (x * cos(b) * cos(c)) + (y * sin(b)) + (-z * -sin(c) * cos(b)); // along x axis - clockwise
-	p->y_3d = (x * ((-sin(b) * cos(a) * cos(c)) + (sin(a) * sin(c)))) + (y * cos(a) * cos(b)) + (-z * ((sin(b) * cos(a) * sin(c)) + (sin(a) * cos(c)))); // along z axis
-	p->z_3d = (x * sin(a) * sin(b) * cos(c)) + (y * -sin(a) * cos(b)) + (-z * ((-sin(a) * sin(b) * sin(c)) + (cos(a) * cos(c)))); // along z axis
+	int x;
+	int y;
+	int z;
 
-	p->x_3d += mlx->x_offset + ((mlx->x_max / 2) * mlx->scale);
-	p->y_3d += mlx->y_offset + ((mlx->y_max / 2) * mlx->scale);
-	p->z_3d += ((mlx->z_max / 2) * mlx->scale);
-	// point->z_3d += mlx->y_offset + 5 * mlx->scale;
+	x = (p->x - (mlx->x_max / 2)) * mlx->scale;
+	y = (p->y - (mlx->y_max / 2)) * mlx->scale;
+	z = (p->z - (mlx->z_max / 2)) * mlx->scale;
+
+	p->x_3d = (x * mlx->cosb * mlx->cosc) + (y * mlx->sinb) + (-z * -mlx->sinc * mlx->cosb); // along x axis - clockwise
+	p->y_3d = (x * ((-mlx->sinb * mlx->cosa * mlx->cosc) + (mlx->sina * mlx->sinc))) + (y * mlx->cosa * mlx->cosb) + (-z * ((mlx->sinb * mlx->cosa * mlx->sinc) + (mlx->sina * mlx->cosc))); // along z axis
+	p->z_3d = (x * mlx->sina * mlx->sinb * mlx->cosc) + (y * -mlx->sina * mlx->cosb) + (-z * ((-mlx->sina * mlx->sinb * mlx->sinc) + (mlx->cosa * mlx->cosc))); // along z axis
+
+	// p->x_3d = x * mlx->cosb * mlx->cosc;
+	// p->x_3d += y * mlx->sinb;
+	// p->x_3d += -z * -mlx->sinc * mlx->cosb;
+	// p->y_3d = x * ((-mlx->sinb * mlx->cosa * mlx->cosc) + (mlx->sina * mlx->sinc));
+	// p->y_3d += y * mlx->cosa * mlx->cosb;
+	// p->y_3d += -z * ((mlx->sinb * mlx->cosa * mlx->sinc) + (mlx->sina * mlx->cosc));
+	// p->z_3d = x * mlx->sina * mlx->sinb * mlx->cosc;
+	// p->z_3d += y * -mlx->sina * mlx->cosb;
+	// p->z_3d += -z * ((-mlx->sina * mlx->sinb * mlx->sinc) + (mlx->cosa * mlx->cosc));
+	
+	// p->x_3d += (mlx->x_max / 2) * mlx->scale;
+	// p->y_3d += (mlx->y_max / 2) * mlx->scale;
+	// p->z_3d += (mlx->z_max / 2) * mlx->scale;
+
+	p->x_3d += mlx->x_offset;
+	p->y_3d += mlx->y_offset;
 }
 
 void	transform_2d(t_point *point, t_mlx *mlx)
@@ -134,9 +105,13 @@ void	put_coordinates(t_mlx *mlx, void (*transform)(t_point *, t_mlx *))
 		i = -1;
 		while(p1[++i + 1].color != -1)
 		{
+			// p2[mlx->z_offset].z += (mlx->z_max + 5); // for the z wave
+			// p1[mlx->z_offset].z += mlx->z_max + 5;
 			transform(&p2[i], mlx);
 			dda(mlx->img, p1[i], p1[i + 1]);
 			dda(mlx->img, p1[i], p2[i]);
+			// p1[mlx->z_offset].z -= mlx->z_max + 5;
+			// p2[mlx->z_offset].z -= mlx->z_max + 5;
 		}
 		transform(&p2[i], mlx);
 		dda(mlx->img, p1[i], p2[i]);
@@ -155,32 +130,17 @@ void	mlx_set_up(t_mlx *mlx, t_data *img)
 	img->img = mlx_new_image(mlx->mlx, WIN_WIDTH, WIN_HEIGHT);
 	img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
 	mlx->img = img;
+	mlx->x_offset = (WIN_WIDTH / 2);
+	mlx->y_offset = (WIN_HEIGHT / 2);
 	mlx->a = 35.264;
 	mlx->b = 45;
 	mlx->c = 0;
-	mlx->x_offset = 0;
-	// mlx->y_offset = WIN_HEIGHT * 0.85;
-	mlx->y_offset = 0;
-	mlx->rx = 0;
-	mlx->ry = 0;
-	mlx->rz = 0;
-}
-
-void	clear_image(t_data *img)
-{
-	int		x;
-	int		y;
-	char	*dst;
-	x = -1;
-	while (++x < WIN_WIDTH)
-	{
-		y = -1;
-		while (++y < WIN_HEIGHT)
-		{
-			dst = img->addr + (y * img->line_length + x * (img->bits_per_pixel / 8));
-			*(unsigned int*)dst = 0;
-		}
-	}
+	mlx->sina = sin(mlx->a * (M_PI / 180.0));
+	mlx->cosa = cos(mlx->a * (M_PI / 180.0));
+	mlx->sinb = sin(mlx->b * (M_PI / 180.0));
+	mlx->cosb = cos(mlx->b * (M_PI / 180.0));
+	mlx->sinc = sin(mlx->c * (M_PI / 180.0));
+	mlx->cosc = cos(mlx->c * (M_PI / 180.0));
 }
 
 void	redraw_image(t_mlx *mlx, void (*transform)(t_point *, t_mlx *))
@@ -188,9 +148,15 @@ void	redraw_image(t_mlx *mlx, void (*transform)(t_point *, t_mlx *))
 	mlx_destroy_image(mlx->mlx, mlx->img->img);
 	mlx->img->img = mlx_new_image(mlx->mlx, WIN_WIDTH, WIN_HEIGHT);
 	mlx->img->addr = mlx_get_data_addr(mlx->img->img, &(mlx->img->bits_per_pixel), &(mlx->img->line_length), &(mlx->img->endian));
-	// clear_image(mlx->img);
 	put_coordinates(mlx, transform);
 	mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img->img, 0, 0);
+}
+
+// check for leaks
+int exit_free(t_mlx *m)
+{
+    ft_lstclear(&m->lst, &free);
+    exit(0);
 }
 
 int	key_click_handler(int keycode, t_mlx *vars)
@@ -209,52 +175,48 @@ int	key_click_handler(int keycode, t_mlx *vars)
 	return (0);
 }
 
-int	key_hold_handler(int keycode, t_mlx *vars)
+void	set_rot_angles(double *x, int angle, double *sinx, double *cosx)
 {
-	if (keycode == RIGHT)
-		vars->b = fmod(vars->b + ROT_ANGLE, 360);
-	else if (keycode == LEFT)
-		vars->b = fmod(vars->b - ROT_ANGLE, 360);
-	else if (keycode == DOWN)
-		vars->a = fmod(vars->a - ROT_ANGLE, 360);
-	else if (keycode == UP)
-		vars->a = fmod(vars->a + ROT_ANGLE, 360);
-	else if (keycode == E)
-		vars->c = fmod(vars->c + ROT_ANGLE, 360);
-	else if (keycode == Q)
-		vars->c = fmod(vars->c - ROT_ANGLE, 360);
-	else if (keycode == PLUS)
-		vars->scale++;
-	else if (keycode == MINUS && vars->scale > 1)
-		vars->scale--;
-	else if (keycode == W)
-		vars->y_offset -= SPEED;
-	else if (keycode == A)
-		vars->x_offset -= SPEED;
-	else if (keycode == S)
-		vars->y_offset += SPEED;
-	else if (keycode == D)
-		vars->x_offset += SPEED;
-	else
-		return (1);
-	redraw_image(vars, transform_3d);
-	// printf("keycode2 = %d\n", keycode);
-	return (0);
+	double rad;
+	
+	*x = fmod(*x + angle, 360);
+	rad = *x * (M_PI / 180.0);
+	*sinx = sin(rad);
+	*cosx = cos(rad);
 }
 
-void display_matrix(double m[3][3])
+int	key_hold_handler(int keycode, t_mlx *m)
 {
-	int i;
-	int j;
-
-	i = -1;
-	while (++i < 3)
-	{
-		j = -1;
-		while (++j < 3)
-			printf("%lf ", m[i][j]);
-		printf("\n");
-	}
+	if (keycode == E)
+		set_rot_angles(&m->b, -ROT_ANGLE, &m->sinb, &m->cosb);
+	else if (keycode == Q)
+		set_rot_angles(&m->b, ROT_ANGLE, &m->sinb, &m->cosb);
+	else if (keycode == S)
+		set_rot_angles(&m->a, -ROT_ANGLE, &m->sina, &m->cosa);
+	else if (keycode == W)
+		set_rot_angles(&m->a, ROT_ANGLE, &m->sina, &m->cosa);
+	else if (keycode == A)
+		set_rot_angles(&m->c, -ROT_ANGLE, &m->sinc, &m->cosc);
+	else if (keycode == D)
+		set_rot_angles(&m->c, ROT_ANGLE, &m->sinc, &m->cosc);
+	else if (keycode == PLUS)
+		m->scale += ZOOM;
+	else if (keycode == MINUS && m->scale > 1)
+		m->scale -= ZOOM;
+	else if (keycode == UP)
+		m->y_offset -= SPEED;
+	else if (keycode == LEFT)
+		m->x_offset -= SPEED;
+	else if (keycode == DOWN)
+		m->y_offset += SPEED;
+	else if (keycode == RIGHT)
+		m->x_offset += SPEED;
+	// else if (keycode == ENTER)
+	// 	m->z_offset = (++m->z_offset) % m->y_max;
+	else
+		return (1);
+	redraw_image(m, transform_3d);
+	return (0);
 }
 
 int	main(int argc, char **argv)
@@ -269,11 +231,10 @@ int	main(int argc, char **argv)
 	
 	get_coordinates(argv[1], &mlx.lst, &mlx);
 	mlx_set_up(&mlx, &img);
-	printf("scale = %d\n", mlx.scale);
-	
 	put_coordinates(&mlx, transform_3d);
 	mlx_key_hook(mlx.win, key_click_handler, &mlx);
 	mlx_hook(mlx.win, 2, 1L<<0, key_hold_handler, &mlx);
+	mlx_hook(mlx.win, 17, 0, exit_free, &mlx);
 	mlx_put_image_to_window(mlx.mlx, mlx.win, img.img, 0, 0);
 	mlx_loop(mlx.mlx);
 	return (0);	

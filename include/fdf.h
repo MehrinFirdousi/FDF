@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 17:31:41 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/15 22:34:13 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/16 21:42:54 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,11 @@
 # include <fcntl.h>
 # define WIN_WIDTH 1280
 // # define WIN_HEIGHT 720
-# define WIN_HEIGHT 920
+# define WIN_HEIGHT 980
 # define WHITE 16777215
 # define SPEED 35
-# define ROT_ANGLE 5
+# define ROT_ANGLE 10
+# define ZOOM 0.5
 
 # ifdef __APPLE__
 #  define ESC 53
@@ -40,6 +41,7 @@
 #  define D		2
 #  define Q		12
 #  define E		14
+// #  define ENTER 36
 
 # else
 #  define ESC	65307
@@ -69,6 +71,7 @@ typedef struct	s_point
 	int	z_3d;
 	int	color;
 }				t_point;
+
 typedef struct	s_data 
 {
 	void	*img;
@@ -84,20 +87,22 @@ typedef struct	s_mlx
 	void	*win;
 	t_data	*img;
 	t_list	*lst;
-	// these 5 can be in their own struct
-	unsigned int	scale; // lower scale -> zoomed out
-	double	a; // rotation angle alpha
-	double	b; // rotation angle beta
+	double	scale;
+	double	a;
+	double	b;
 	double	c;
 	int		x_offset;
 	int		y_offset;
+	// int		z_offset;
 	int		z_max;
 	int		x_max;
 	int		y_max;
-	double	r[3][3];
-	int		rx;
-	int		ry;
-	int		rz;
+	double	sina;
+	double	sinb;
+	double	sinc;
+	double	cosa;
+	double	cosb;
+	double	cosc;
 }				t_mlx;
 
 t_list	*create_row(char **point_strs, int count_points, int y, int *z_max);
