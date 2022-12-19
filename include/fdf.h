@@ -18,12 +18,14 @@
 # include <math.h>
 # include <fcntl.h>
 # define WIN_WIDTH 1280
-// # define WIN_HEIGHT 720
-# define WIN_HEIGHT 980
+# define WIN_HEIGHT 720
+// # define WIN_HEIGHT 980
 # define WHITE 16777215
 # define SPEED 35
+# define DVD_SPEED 5
 # define ROT_ANGLE 10
 # define ZOOM 0.5
+# define HEX_MAX 16777216
 
 # ifdef __APPLE__
 #  define ESC 53
@@ -41,7 +43,7 @@
 #  define D		2
 #  define Q		12
 #  define E		14
-// #  define ENTER 36
+#  define ENTER 36
 
 # else
 #  define ESC	65307
@@ -59,6 +61,7 @@
 #  define D		100
 #  define Q		113
 #  define E		101
+#  define ENTER 65293
 # endif
 
 typedef struct	s_point
@@ -103,6 +106,8 @@ typedef struct	s_mlx
 	double	cosa;
 	double	cosb;
 	double	cosc;
+	int		direction;
+	int		color_change;
 }				t_mlx;
 
 t_list	*create_row(char **point_strs, int count_points, int y, int *z_max);

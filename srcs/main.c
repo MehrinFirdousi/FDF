@@ -25,7 +25,7 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, unsigned int color)
 	}
 }
 
-void dda(t_data *img, t_point p1, t_point p2)
+void dda(t_mlx *m, t_point p1, t_point p2)
 {
 	int dx;
 	int dy;
@@ -41,7 +41,7 @@ void dda(t_data *img, t_point p1, t_point p2)
 	float Y = p1.y_3d;
 	for (int i = 0; i <= steps; i++) 
 	{
-		my_mlx_pixel_put(img, X, Y, p1.color);
+		my_mlx_pixel_put(m->img, X, Y, (p1.color * m->color_change) % HEX_MAX);
 		X += Xinc; // increment in x at each step
 		Y += Yinc; // increment in y at each step
 	}
@@ -80,10 +80,10 @@ void	transform_3d(t_point *p, t_mlx *mlx)
 	p->y_3d += mlx->y_offset;
 }
 
-void	transform_2d(t_point *point, t_mlx *mlx)
+void	transform_2d(t_point *p, t_mlx *mlx)
 {
-	point->x_3d = point->x * mlx->scale;
-	point->y_3d = point->y * mlx->scale;
+	p->x_3d = p->x * mlx->scale;
+	p->y_3d = p->y * mlx->scale;
 }
 
 void	put_coordinates(t_mlx *mlx, void (*transform)(t_point *, t_mlx *))
@@ -108,19 +108,19 @@ void	put_coordinates(t_mlx *mlx, void (*transform)(t_point *, t_mlx *))
 			// p2[mlx->z_offset].z += (mlx->z_max + 5); // for the z wave
 			// p1[mlx->z_offset].z += mlx->z_max + 5;
 			transform(&p2[i], mlx);
-			dda(mlx->img, p1[i], p1[i + 1]);
-			dda(mlx->img, p1[i], p2[i]);
+			dda(mlx, p1[i], p1[i + 1]);
+			dda(mlx, p1[i], p2[i]);
 			// p1[mlx->z_offset].z -= mlx->z_max + 5;
 			// p2[mlx->z_offset].z -= mlx->z_max + 5;
 		}
 		transform(&p2[i], mlx);
-		dda(mlx->img, p1[i], p2[i]);
+		dda(mlx, p1[i], p2[i]);
 		node = node->next;
 	}
 	i = -1;
 	p1 = (t_point *)node->content;
 	while(p1[++i + 1].color != -1)
-		dda(mlx->img, p1[i], p1[i + 1]);
+		dda(mlx, p1[i], p1[i + 1]);
 }
 
 void	mlx_set_up(t_mlx *mlx, t_data *img)
@@ -141,6 +141,8 @@ void	mlx_set_up(t_mlx *mlx, t_data *img)
 	mlx->cosb = cos(mlx->b * (M_PI / 180.0));
 	mlx->sinc = sin(mlx->c * (M_PI / 180.0));
 	mlx->cosc = cos(mlx->c * (M_PI / 180.0));
+	mlx->direction = 1;
+	mlx->color_change = 1;
 }
 
 void	redraw_image(t_mlx *mlx, void (*transform)(t_point *, t_mlx *))
@@ -185,6 +187,77 @@ void	set_rot_angles(double *x, int angle, double *sinx, double *cosx)
 	*cosx = cos(rad);
 }
 
+/*
+- - top-left     \. 1
+- + bottom-left  /  4
++ - top-right   ./  2
++ + bottom-right \  3
+
+x y    	   x'y'
+
+		x	   y
+- - => + - or - +		001 => 2 or 4
++ - => - - or + +		102 => 1 or 3
++ + => - + or + -		113 => 4 or 2
+- + => + + or - -		014 => 3 or 1
+
+*/
+
+void	change_direction(t_mlx *mlx)
+{
+	t_list	*node;
+	t_point *p;
+	int i;
+	int edge_reached;
+
+	node = mlx->lst;
+	edge_reached = 0;
+	while (node)
+	{
+		p = (t_point *)node->content;
+		i = -1;
+		while(p[++i].color != -1)
+			if (p[i].x_3d <= 0 || p[i].y_3d <= 0 || p[i].x_3d >= WIN_WIDTH || p[i].y_3d >= WIN_HEIGHT)
+			{
+				if ((p[i].x_3d >=  WIN_WIDTH && mlx->direction == 3) || (p[i].y_3d <= 0 && mlx->direction == 1))
+					mlx->direction = 4;
+				else if ((p[i].x_3d <= 0 && mlx->direction == 4) || (p[i].y_3d <= 0 && mlx->direction == 2))
+					mlx->direction = 3;
+				else if ((p[i].x_3d <= 0 && mlx->direction == 1) || (p[i].y_3d >= WIN_HEIGHT && mlx->direction == 3))
+					mlx->direction = 2;
+				else if ((p[i].x_3d >= WIN_WIDTH && mlx->direction == 2) || (p[i].y_3d >= WIN_HEIGHT && mlx->direction == 4))
+					mlx->direction = 1;
+				// mlx->direction = (mlx->direction % 4) + 1;
+				edge_reached = 1;
+				mlx->color_change++;
+				break;
+			}
+		if (edge_reached)
+			break;
+		node = node->next;
+	}
+	if (mlx->direction == 1)
+	{
+		mlx->x_offset -= DVD_SPEED;
+		mlx->y_offset -= DVD_SPEED;
+	}
+	else if (mlx->direction == 2)
+	{
+		mlx->x_offset += DVD_SPEED;
+		mlx->y_offset -= DVD_SPEED;
+	}
+	else if (mlx->direction == 3)
+	{
+		mlx->x_offset += DVD_SPEED;
+		mlx->y_offset += DVD_SPEED;
+	}
+	else if (mlx->direction == 4)
+	{
+		mlx->x_offset -= DVD_SPEED;
+		mlx->y_offset += DVD_SPEED;
+	}
+}
+
 int	key_hold_handler(int keycode, t_mlx *m)
 {
 	if (keycode == E)
@@ -211,8 +284,8 @@ int	key_hold_handler(int keycode, t_mlx *m)
 		m->y_offset += SPEED;
 	else if (keycode == RIGHT)
 		m->x_offset += SPEED;
-	// else if (keycode == ENTER)
-	// 	m->z_offset = (++m->z_offset) % m->y_max;
+	else if (keycode == ENTER)
+		change_direction(m);
 	else
 		return (1);
 	redraw_image(m, transform_3d);
