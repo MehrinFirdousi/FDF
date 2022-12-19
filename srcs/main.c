@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 15:24:28 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/16 21:42:39 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/19 20:51:40 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,7 @@ void	mlx_set_up(t_mlx *mlx, t_data *img)
 	mlx->img = img;
 	mlx->x_offset = (WIN_WIDTH / 2);
 	mlx->y_offset = (WIN_HEIGHT / 2);
+	// mlx->z_offset = 0;
 	mlx->a = 35.264;
 	mlx->b = 45;
 	mlx->c = 0;
@@ -141,7 +142,7 @@ void	mlx_set_up(t_mlx *mlx, t_data *img)
 	mlx->cosb = cos(mlx->b * (M_PI / 180.0));
 	mlx->sinc = sin(mlx->c * (M_PI / 180.0));
 	mlx->cosc = cos(mlx->c * (M_PI / 180.0));
-	mlx->direction = 1;
+	mlx->dir = 1;
 	mlx->color_change = 1;
 }
 
@@ -203,55 +204,79 @@ x y    	   x'y'
 
 */
 
-void	change_direction(t_mlx *mlx)
+void	change_direction(t_list *node, t_mlx *m, t_point *p)
 {
-	t_list	*node;
-	t_point *p;
+	int x;
+	int y;
 	int i;
-	int edge_reached;
 
-	node = mlx->lst;
-	edge_reached = 0;
 	while (node)
 	{
 		p = (t_point *)node->content;
 		i = -1;
+		x = p[i].x_3d;
+		y = p[i].y_3d;
 		while(p[++i].color != -1)
-			if (p[i].x_3d <= 0 || p[i].y_3d <= 0 || p[i].x_3d >= WIN_WIDTH || p[i].y_3d >= WIN_HEIGHT)
+			if (p[i].x_3d <= 0 || p[i].y_3d <= 0 || p[i].x_3d >= WW || p[i].y_3d >= WH)
 			{
-				if ((p[i].x_3d >=  WIN_WIDTH && mlx->direction == 3) || (p[i].y_3d <= 0 && mlx->direction == 1))
-					mlx->direction = 4;
-				else if ((p[i].x_3d <= 0 && mlx->direction == 4) || (p[i].y_3d <= 0 && mlx->direction == 2))
-					mlx->direction = 3;
-				else if ((p[i].x_3d <= 0 && mlx->direction == 1) || (p[i].y_3d >= WIN_HEIGHT && mlx->direction == 3))
-					mlx->direction = 2;
-				else if ((p[i].x_3d >= WIN_WIDTH && mlx->direction == 2) || (p[i].y_3d >= WIN_HEIGHT && mlx->direction == 4))
-					mlx->direction = 1;
-				// mlx->direction = (mlx->direction % 4) + 1;
-				edge_reached = 1;
-				mlx->color_change++;
-				break;
+				if ((p[i].x_3d >=  WW && m->dir == 3) || (p[i].y_3d <= 0 && m->dir == 1))
+					m->dir = 4;
+				else if ((p[i].x_3d <= 0 && m->dir == 4) || (p[i].y_3d <= 0 && m->dir == 2))
+					m->dir = 3;
+				else if ((p[i].x_3d <= 0 && m->dir == 1) || (p[i].y_3d >= WH && m->dir == 3))
+					m->dir = 2;
+				else if ((p[i].x_3d >= WW && m->dir == 2) || (p[i].y_3d >= WH && m->dir == 4))
+					m->dir = 1;
+				m->color_change++;
+				return ; 
 			}
-		if (edge_reached)
-			break;
 		node = node->next;
 	}
-	if (mlx->direction == 1)
+}
+
+void	dvd_translate(t_mlx *mlx)
+{
+	change_direction(mlx->lst, mlx);
+	// edge_reached = 0;
+	// while (node)
+	// {
+	// 	p = (t_point *)node->content;
+	// 	i = -1;
+	// 	while(p[++i].color != -1)
+	// 		if (p[i].x_3d <= 0 || p[i].y_3d <= 0 || p[i].x_3d >= WIN_WIDTH || p[i].y_3d >= WIN_HEIGHT)
+	// 		{
+	// 			if ((p[i].x_3d >=  WIN_WIDTH && mlx->dir == 3) || (p[i].y_3d <= 0 && mlx->dir == 1))
+	// 				mlx->dir = 4;
+	// 			else if ((p[i].x_3d <= 0 && mlx->dir == 4) || (p[i].y_3d <= 0 && mlx->dir == 2))
+	// 				mlx->dir = 3;
+	// 			else if ((p[i].x_3d <= 0 && mlx->dir == 1) || (p[i].y_3d >= WIN_HEIGHT && mlx->dir == 3))
+	// 				mlx->dir = 2;
+	// 			else if ((p[i].x_3d >= WIN_WIDTH && mlx->dir == 2) || (p[i].y_3d >= WIN_HEIGHT && mlx->dir == 4))
+	// 				mlx->dir = 1;
+	// 			edge_reached = 1;
+	// 			mlx->color_change++;
+	// 			break;
+	// 		}
+	// 	if (edge_reached)
+	// 		break;
+	// 	node = node->next;
+	// }
+	if (mlx->dir == 1)
 	{
 		mlx->x_offset -= DVD_SPEED;
 		mlx->y_offset -= DVD_SPEED;
 	}
-	else if (mlx->direction == 2)
+	else if (mlx->dir == 2)
 	{
 		mlx->x_offset += DVD_SPEED;
 		mlx->y_offset -= DVD_SPEED;
 	}
-	else if (mlx->direction == 3)
+	else if (mlx->dir == 3)
 	{
 		mlx->x_offset += DVD_SPEED;
 		mlx->y_offset += DVD_SPEED;
 	}
-	else if (mlx->direction == 4)
+	else if (mlx->dir == 4)
 	{
 		mlx->x_offset -= DVD_SPEED;
 		mlx->y_offset += DVD_SPEED;
@@ -285,7 +310,7 @@ int	key_hold_handler(int keycode, t_mlx *m)
 	else if (keycode == RIGHT)
 		m->x_offset += SPEED;
 	else if (keycode == ENTER)
-		change_direction(m);
+		dvd_translate(m);
 	else
 		return (1);
 	redraw_image(m, transform_3d);
@@ -294,14 +319,14 @@ int	key_hold_handler(int keycode, t_mlx *m)
 
 int	main(int argc, char **argv)
 {
+	t_mlx	mlx;
+	t_data	img;
+	
 	if (argc != 2)
 	{
 		ft_printf("Usage : %s <filename>\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
-	t_mlx	mlx;
-	t_data	img;
-	
 	get_coordinates(argv[1], &mlx.lst, &mlx);
 	mlx_set_up(&mlx, &img);
 	put_coordinates(&mlx, transform_3d);

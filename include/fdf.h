@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 17:31:41 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/16 21:42:54 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/19 20:46:57 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,14 @@
 # include <mlx.h>
 # include <math.h>
 # include <fcntl.h>
-# define WIN_WIDTH 1280
-# define WIN_HEIGHT 720
-// # define WIN_HEIGHT 980
+# define WIN_WIDTH 1580
+// # define WIN_HEIGHT 720
+# define WIN_HEIGHT 980
+# define WW WIN_WIDTH
+# define WH WIN_HEIGHT
 # define WHITE 16777215
 # define SPEED 35
-# define DVD_SPEED 5
+# define DVD_SPEED 10
 # define ROT_ANGLE 10
 # define ZOOM 0.5
 # define HEX_MAX 16777216
@@ -96,7 +98,6 @@ typedef struct	s_mlx
 	double	c;
 	int		x_offset;
 	int		y_offset;
-	// int		z_offset;
 	int		z_max;
 	int		x_max;
 	int		y_max;
@@ -106,7 +107,7 @@ typedef struct	s_mlx
 	double	cosa;
 	double	cosb;
 	double	cosc;
-	int		direction;
+	int		dir;
 	int		color_change;
 }				t_mlx;
 
