@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 17:31:41 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/19 20:46:57 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/20 21:36:17 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # define WHITE 16777215
 # define SPEED 35
 # define DVD_SPEED 10
-# define ROT_ANGLE 10
+# define ROT_ANGLE 7
 # define ZOOM 0.5
 # define HEX_MAX 16777216
 
@@ -66,7 +66,7 @@
 #  define ENTER 65293
 # endif
 
-typedef struct	s_point
+typedef struct s_point
 {
 	int	x;
 	int	y;
@@ -77,7 +77,7 @@ typedef struct	s_point
 	int	color;
 }				t_point;
 
-typedef struct	s_data 
+typedef struct s_data
 {
 	void	*img;
 	char	*addr;
@@ -86,7 +86,7 @@ typedef struct	s_data
 	int		endian;
 }				t_data;
 
-typedef struct	s_mlx
+typedef struct s_mlx
 {
 	void	*mlx;
 	void	*win;
@@ -109,18 +109,46 @@ typedef struct	s_mlx
 	double	cosc;
 	int		dir;
 	int		color_change;
+	int		cur_projection;
 }				t_mlx;
 
+typedef struct s_dda_dat
+{
+	int		dx;
+	int		dy;
+	int		dx_abs;
+	int		dy_abs;
+	int		steps;
+	float	x_inc;
+	float	y_inc;
+}				t_dda_dat;
+
+// parsing
 t_list	*create_row(char **point_strs, int count_points, int y, int *z_max);
 void	free_points(void *points);
-void	get_coordinates(char *file_name, t_list **lst, t_mlx *mlx);
+void	get_coordinates(int fd, t_list **lst, t_mlx *mlx);
 int		hex_to_dec(char *hex);
-void	transform_3d(t_point *point, t_mlx *mlx);
-double	deg_to_rad(double deg);
-void	matrix_mul(t_mlx *mlx);
-void	rotate(t_point *point, t_mlx *mlx);
-void	rotate_x(t_point *point, t_mlx *mlx);
-void	rotate_y(t_point *p, t_mlx *mlx);
-void	rotate_z(t_point *p, t_mlx *mlx);
+
+// drawing
+void	dda(t_mlx *m, t_point p1, t_point p2);
+void	transform_3d(t_point *p, t_mlx *m);
+void	transform_2d(t_point *p, t_mlx *mlx);
+void	draw_lines(t_list *node, t_mlx *mlx, void (*t)(t_point *, t_mlx *));
+void	draw_image(t_mlx *mlx, void (*transform)(t_point *, t_mlx *));
+
+// key handling
+void	set_rot_angles(double *x, int angle, double *sinx, double *cosx);
+int		check_rotate(int keycode, t_mlx *m);
+int		key_hold_handler(int keycode, t_mlx *m);
+int		key_click_handler(int keycode, t_mlx *m);
+void	redraw_image(t_mlx *m);
+
+// dvd translation
+void	check_window_edge(t_point p, t_mlx *m);
+void	change_direction(t_mlx *m);
+void	dvd_translate(t_mlx *mlx);
+
+void	my_mlx_pixel_put(t_data *data, int x, int y, unsigned int color);
+void	mlx_set_up(t_mlx *mlx, t_data *img);
 
 #endif

@@ -263,3 +263,54 @@ void	matrix_mul2(t_mlx *mlx)
 	mlx->r[2][1] = r1[2][0] * r2[0][1] + r1[2][1] * r2[1][1] + r1[2][2] * r2[2][1];
 	mlx->r[2][2] = r1[2][0] * r2[0][2] + r1[2][1] * r2[1][2] + r1[2][2] * r2[2][2];	
 }
+
+void	get_coordinates(int fd, t_list **lst, t_mlx *mlx)
+{
+	char	*row;
+	char	**point_strs;
+	int		row_count;
+	int		col_count;
+	int		new_count;
+	int		z_max;
+	t_list *rows_end;
+
+	row_count = 0;
+	row = get_next_line(fd);
+	point_strs = ft_split2(row, " \n", &col_count);
+	z_max = 0;
+
+	// ft_lstadd_back(&rows_start, create_row(point_strs, count_points, y++));
+	*lst = create_row(point_strs, col_count, row_count++, &z_max);
+	rows_end = *lst;
+	free(row);
+	ft_free_strs(point_strs);
+	row = get_next_line(fd);
+	while (row)
+	{
+		point_strs = ft_split2(row, " \n", &new_count);
+		if (new_count != col_count)
+		{
+			ft_printf("Found wrong line length. Exiting.\n");
+			while (row) // to read till the end 
+			{
+				free(row);
+				row = get_next_line(fd);	
+			}
+			close(fd);
+			ft_free_strs(point_strs);
+			ft_lstclear(lst, &free);
+			exit(EXIT_FAILURE);
+		}
+		// ft_lstadd_back(&rows_start, create_row(point_strs, new_count, y++));
+		rows_end->next = create_row(point_strs, new_count, row_count++, &z_max);
+		rows_end = rows_end->next;
+		free(row);
+		ft_free_strs(point_strs);
+		row = get_next_line(fd);
+	}
+	close(fd);
+	mlx->scale = calc_scale_factor(row_count, col_count, z_max);
+	mlx->x_max = col_count;
+	mlx->y_max = row_count;
+	mlx->z_max = z_max;
+}

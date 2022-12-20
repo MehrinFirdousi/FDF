@@ -6,18 +6,11 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/19 16:55:30 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/16 18:35:25 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/20 22:40:06 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
-
-/**
- * @todo
- * leak from gnl buffer - should we fix?
- * make get_rows return row_len and col_len ?
- * z projection is not straight 
- */
 
 int	hex_to_dec(char *hex)
 {
@@ -31,12 +24,12 @@ int	hex_to_dec(char *hex)
 	{
 		hex++;
 		len = ft_strlen(hex);
-		while(hex[++i])
+		while (hex[++i])
 		{
 			if (ft_isdigit(hex[i]))
 				sum += (hex[i] - 48) * pow(16, --len);
 			else
-				sum += (ft_toupper(hex[i]) - 55) * pow(16, --len); // can remove % 16 
+				sum += (ft_toupper(hex[i]) - 55) * pow(16, --len);
 		}
 		return (sum);
 	}
@@ -65,20 +58,10 @@ t_list	*create_row(char **point_strs, int count_points, int y, int *z_max)
 	return (ft_lstnew(p));
 }
 
-void	display_point_strs(char **point_strs)
-{
-	int i;
-
-	i = -1;
-	while (point_strs[++i])
-		printf("-%s- ", point_strs[i]);
-	printf("\n");
-}
-
 int	calc_scale_factor(int row_count, int col_count, int z_max)
 {
-	int w;
-	int h;
+	int	w;
+	int	h;
 	int	z;
 
 	w = WIN_WIDTH / (col_count * 1.4);
@@ -94,36 +77,28 @@ int	calc_scale_factor(int row_count, int col_count, int z_max)
 	return (z);
 }
 
-// each list row will have an array of points, each point will describe x, y, z and color
-void	get_coordinates(char *file_name, t_list **lst, t_mlx *mlx)
+/**
+ * @brief Gets the (x,y,z) coordinate values from the fdf map file
+ * 
+ * 
+ * @param fd file descriptor of open .fdf file
+ * @param lst Each list row will have an array of points,
+ * 			  each point will describe x, y, z and color
+ * @param m mlx object
+ */
+void	get_coordinates(int fd, t_list **lst, t_mlx *m)
 {
-	int		fd;
 	char	*row;
 	char	**point_strs;
-	int		row_count;
-	int		col_count;
 	int		new_count;
-	int		z_max;
-	t_list *rows_end;
-	
-	if (ft_strncmp(ft_strchr(file_name, '.'), ".fdf", 5) != 0)
-	{
-		ft_printf("File has to be in .fdf format\n");
-		exit(EXIT_FAILURE);
-	}
-	fd = open(file_name, O_RDONLY);
-	if (fd == -1)
-	{
-		ft_printf("File does not exist\n");
-		exit(EXIT_FAILURE);
-	}
-	row_count = 0;
+	t_list	*rows_end;
+
+	m->y_max = 0;
+	m->z_max = 0;
 	row = get_next_line(fd);
-	point_strs = ft_split2(row, " \n", &col_count);
-	z_max = 0;
-	
+	point_strs = ft_split2(row, " \n", &m->x_max);
 	// ft_lstadd_back(&rows_start, create_row(point_strs, count_points, y++));
-	*lst = create_row(point_strs, col_count, row_count++, &z_max);
+	*lst = create_row(point_strs, m->x_max, (m->y_max)++, &(m->z_max));
 	rows_end = *lst;
 	free(row);
 	ft_free_strs(point_strs);
@@ -131,13 +106,13 @@ void	get_coordinates(char *file_name, t_list **lst, t_mlx *mlx)
 	while (row)
 	{
 		point_strs = ft_split2(row, " \n", &new_count);
-		if (new_count != col_count)
+		if (new_count != m->x_max)
 		{
 			ft_printf("Found wrong line length. Exiting.\n");
-			while (row) // to read till the end 
+			while (row)
 			{
 				free(row);
-				row = get_next_line(fd);	
+				row = get_next_line(fd);
 			}
 			close(fd);
 			ft_free_strs(point_strs);
@@ -145,15 +120,12 @@ void	get_coordinates(char *file_name, t_list **lst, t_mlx *mlx)
 			exit(EXIT_FAILURE);
 		}
 		// ft_lstadd_back(&rows_start, create_row(point_strs, new_count, y++));
-		rows_end->next = create_row(point_strs, new_count, row_count++, &z_max);
+		rows_end->next = create_row(point_strs, new_count, (m->y_max)++, &(m->z_max));
 		rows_end = rows_end->next;
 		free(row);
 		ft_free_strs(point_strs);
 		row = get_next_line(fd);
 	}
 	close(fd);
-	mlx->scale = calc_scale_factor(row_count, col_count, z_max);
-	mlx->x_max = col_count;
-	mlx->y_max = row_count;
-	mlx->z_max = z_max;
+	m->scale = calc_scale_factor(m->y_max, m->x_max, m->z_max);
 }

@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 15:24:28 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/16 13:23:50 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/20 16:32:02 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ void	transform_2d(t_point *point, t_mlx *mlx)
 	point->y_3d = point->y * mlx->scale;
 }
 
-void	put_coordinates(t_mlx *mlx, void (*transform)(t_point *, t_mlx *))
+void	draw_image(t_mlx *mlx, void (*transform)(t_point *, t_mlx *))
 {
 	t_list	*node;
 	t_point *p1;
@@ -184,7 +184,7 @@ void	redraw_image(t_mlx *mlx, void (*transform)(t_point *, t_mlx *), char axis)
 	mlx->img->addr = mlx_get_data_addr(mlx->img->img, &(mlx->img->bits_per_pixel), &(mlx->img->line_length), &(mlx->img->endian));
 	// clear_image(mlx->img);
 	(void)axis;
-	put_coordinates(mlx, transform);
+	draw_image(mlx, transform);
 	mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img->img, 0, 0);
 }
 
@@ -297,7 +297,7 @@ int	main(int argc, char **argv)
 	mlx_set_up(&mlx, &img);
 	printf("scale = %d\n", mlx.scale);
 	
-	put_coordinates(&mlx, transform_3d);
+	draw_image(&mlx, transform_3d);
 	mlx_key_hook(mlx.win, key_click_handler, &mlx);
 	mlx_hook(mlx.win, 2, 1L<<0, key_hold_handler, &mlx);
 	mlx_put_image_to_window(mlx.mlx, mlx.win, img.img, 0, 0);
