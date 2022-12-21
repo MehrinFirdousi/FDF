@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/20 16:53:41 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/20 22:12:15 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/21 13:59:16 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,6 @@ void	transform_3d(t_point *p, t_mlx *m)
 				(y * -m->sina * m->cosb) + \
 				(-z * ((-m->sina * m->sinb * m->sinc) + \
 				(m->cosa * m->cosc)));
-	// p->x_3d += (m->x_max / 2) * m->scale;
-	// p->y_3d += (m->y_max / 2) * m->scale;
-	// p->z_3d += (m->z_max / 2) * m->scale;
 	p->x_3d += m->x_offset;
 	p->y_3d += m->y_offset;
 }

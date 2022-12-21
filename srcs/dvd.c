@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/20 21:19:06 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/20 21:19:55 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/21 19:48:31 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,27 +50,42 @@ void	change_direction(t_mlx *m)
 	}
 }
 
-void	dvd_translate(t_mlx *mlx)
+void	change_offset(t_mlx *m, int x_speed, int y_speed)
 {
-	change_direction(mlx);
-	if (mlx->dir == 1)
+	m->x_offset += x_speed;
+	m->y_offset += y_speed;
+}
+
+int	dvd_translate(t_mlx *mlx)
+{
+	if (mlx->dvd_translate)
 	{
-		mlx->x_offset -= DVD_SPEED;
-		mlx->y_offset -= DVD_SPEED;
+		change_direction(mlx);
+		if (mlx->dir == 1)
+			change_offset(mlx, -DVD_SPEED, -DVD_SPEED);
+		else if (mlx->dir == 2)
+			change_offset(mlx, DVD_SPEED, -DVD_SPEED);
+		else if (mlx->dir == 3)
+			change_offset(mlx, DVD_SPEED, DVD_SPEED);
+		else if (mlx->dir == 4)
+			change_offset(mlx, -DVD_SPEED, DVD_SPEED);
+		redraw_image(mlx);
 	}
-	else if (mlx->dir == 2)
-	{
-		mlx->x_offset += DVD_SPEED;
-		mlx->y_offset -= DVD_SPEED;
-	}
-	else if (mlx->dir == 3)
-	{
-		mlx->x_offset += DVD_SPEED;
-		mlx->y_offset += DVD_SPEED;
-	}
-	else if (mlx->dir == 4)
-	{
-		mlx->x_offset -= DVD_SPEED;
-		mlx->y_offset += DVD_SPEED;
-	}
+	return (0);
+}
+
+void	transform_cabinet(t_point *p, t_mlx *m)
+{
+	int	x;
+	int	y;
+	int	z;
+
+	x = (p->x - (m->x_max / 2)) * m->scale;
+	y = (p->y - (m->y_max / 2)) * m->scale;
+	z = -(p->z - (m->z_max / 2)) * m->scale;
+	p->x_3d = x + 0.5 * z * m->cosb;
+	p->y_3d = y + 0.5 * z * m->sinb;
+	p->z_3d = 0;
+	p->x_3d += m->x_offset;
+	p->y_3d += m->y_offset;
 }

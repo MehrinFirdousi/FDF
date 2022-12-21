@@ -6,17 +6,9 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 15:24:28 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/20 22:41:54 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/21 19:37:17 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-/**
- * @todo
- * mlx loop hook for dvd translate
- * norm fix for parsing
- * cavilier/cabinet projection or any other projection
- * 
- */
 
 #include "fdf.h"
 
@@ -54,6 +46,7 @@ void	mlx_set_up(t_mlx *mlx, t_data *img)
 	mlx->dir = 1;
 	mlx->color_change = 1;
 	mlx->cur_projection = 3;
+	mlx->dvd_translate = 0;
 }
 
 // check for leaks
@@ -93,12 +86,13 @@ int	main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	fd = open_file(argv[1]);
-	get_coordinates(fd, &mlx.lst, &mlx);
+	get_3d_coordinates(fd, &mlx);
 	mlx_set_up(&mlx, &img);
 	draw_image(&mlx, transform_3d);
 	mlx_key_hook(mlx.win, key_click_handler, &mlx);
 	mlx_hook(mlx.win, 2, 1L << 0, key_hold_handler, &mlx);
 	mlx_hook(mlx.win, 17, 0, exit_free, &mlx);
+	mlx_loop_hook(mlx.mlx, dvd_translate, &mlx);
 	mlx_put_image_to_window(mlx.mlx, mlx.win, img.img, 0, 0);
 	mlx_loop(mlx.mlx);
 	return (0);

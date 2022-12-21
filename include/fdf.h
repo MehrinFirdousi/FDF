@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 17:31:41 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/20 21:36:17 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/21 19:39:29 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,9 @@
 # define WH WIN_HEIGHT
 # define WHITE 16777215
 # define SPEED 35
-# define DVD_SPEED 10
-# define ROT_ANGLE 7
+// # define DVD_SPEED 45
+# define DVD_SPEED 8
+# define ROT_ANGLE 15
 # define ZOOM 0.5
 # define HEX_MAX 16777216
 
@@ -33,6 +34,7 @@
 #  define ESC 53
 #  define TWO	19
 #  define THREE	20
+#  define FOUR	21
 #  define LEFT	123
 #  define UP	126
 #  define RIGHT	124
@@ -110,6 +112,7 @@ typedef struct s_mlx
 	int		dir;
 	int		color_change;
 	int		cur_projection;
+	int		dvd_translate;
 }				t_mlx;
 
 typedef struct s_dda_dat
@@ -124,10 +127,11 @@ typedef struct s_dda_dat
 }				t_dda_dat;
 
 // parsing
-t_list	*create_row(char **point_strs, int count_points, int y, int *z_max);
-void	free_points(void *points);
-void	get_coordinates(int fd, t_list **lst, t_mlx *mlx);
 int		hex_to_dec(char *hex);
+t_list	*create_row(char **point_strs, int count_points, t_mlx *m);
+int		calc_scale_factor(int row_count, int col_count, int z_max);
+void	get_points(char *row, int fd, t_list **lst_end, t_mlx *m);
+void	get_3d_coordinates(int fd, t_mlx *mlx);
 
 // drawing
 void	dda(t_mlx *m, t_point p1, t_point p2);
@@ -146,9 +150,13 @@ void	redraw_image(t_mlx *m);
 // dvd translation
 void	check_window_edge(t_point p, t_mlx *m);
 void	change_direction(t_mlx *m);
-void	dvd_translate(t_mlx *mlx);
+void	change_offset(t_mlx *m, int x_speed, int y_speed);
+int		dvd_translate(t_mlx *mlx);
+void	transform_cabinet(t_point *p, t_mlx *m);
 
 void	my_mlx_pixel_put(t_data *data, int x, int y, unsigned int color);
 void	mlx_set_up(t_mlx *mlx, t_data *img);
+int		exit_free(t_mlx *m);
+int		open_file(char *file_name);
 
 #endif

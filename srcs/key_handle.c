@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/20 16:48:31 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/20 21:17:07 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/21 19:27:02 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int	key_hold_handler(int keycode, t_mlx *m)
 		else if (keycode == MINUS && m->scale > 1)
 			m->scale -= ZOOM;
 		else if (keycode == ENTER)
-			dvd_translate(m);
+			m->dvd_translate = !m->dvd_translate;
 		else
 			return (1);
 		redraw_image(m);
@@ -85,6 +85,12 @@ int	key_click_handler(int keycode, t_mlx *m)
 		m->cur_projection = 3;
 		redraw_image(m);
 	}
+	if (keycode == FOUR)
+	{
+		m->cur_projection = 4;
+		redraw_image(m);
+	}
+	printf("keycode=%d\n", keycode);
 	return (0);
 }
 
@@ -98,5 +104,10 @@ void	redraw_image(t_mlx *m)
 		draw_image(m, transform_3d);
 	else if (m->cur_projection == 2)
 		draw_image(m, transform_2d);
+	else if (m->cur_projection == 4)
+	{
+		printf("hi\n");
+		draw_image(m, transform_cabinet);
+	}
 	mlx_put_image_to_window(m->mlx, m->win, m->img->img, 0, 0);
 }
