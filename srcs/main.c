@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 15:24:28 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/21 19:37:17 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/21 20:30:15 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ void	mlx_set_up(t_mlx *mlx, t_data *img)
 int	exit_free(t_mlx *m)
 {
 	mlx_destroy_image(m->mlx, m->img->img);
-	mlx_destroy_window(m->mlx, m->win);
 	ft_lstclear(&m->lst, &free);
 	exit(0);
 }

@@ -6,28 +6,27 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 17:31:41 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/21 19:39:29 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/21 20:35:50 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FDF_H
 
 # define FDF_H
+
 # include "libft.h"
 # include <mlx.h>
 # include <math.h>
 # include <fcntl.h>
-# define WIN_WIDTH 1280
-// # define WIN_WIDTH 1580
-# define WIN_HEIGHT 620
-// # define WIN_HEIGHT 980
+
+# define WIN_WIDTH 1580
+# define WIN_HEIGHT 980
 # define WW WIN_WIDTH
 # define WH WIN_HEIGHT
 # define WHITE 16777215
 # define SPEED 35
-// # define DVD_SPEED 45
 # define DVD_SPEED 8
-# define ROT_ANGLE 15
+# define ROT_ANGLE 9
 # define ZOOM 0.5
 # define HEX_MAX 16777216
 

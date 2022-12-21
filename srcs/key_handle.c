@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/20 16:48:31 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/12/21 19:27:02 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/12/21 20:44:32 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ int	key_hold_handler(int keycode, t_mlx *m)
 		else if (keycode == ENTER)
 		{
 			m->dvd_translate = !m->dvd_translate;
-			// return (1);
+			return (0);
 		}
 		else
 			return (1);

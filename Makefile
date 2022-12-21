@@ -6,7 +6,7 @@
 #    By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/17 15:25:59 by mfirdous          #+#    #+#              #
-#    Updated: 2022/12/21 19:46:11 by mfirdous         ###   ########.fr        #
+#    Updated: 2022/12/21 20:29:26 by mfirdous         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,8 +35,6 @@ MLX_FLAGS	= -L. -lmlx -framework OpenGL -framework AppKit
 
 ${NAME}:	${LIBFT} ${MLX} ${OBJS}
 			${CC} ${CFLAGS} ${MLX_FLAGS} ${OBJS} ${LIBFT} -o ${NAME}
-# ${NAME}:	${LIBFT} ${OBJS}
-#			${CC} ${CFLAGS} ${OBJS} ${LIBFT} -o ${NAME} -lm 
 
 ${LIBFT}:	
 			${MAKE} -C libft
@@ -47,6 +45,8 @@ ${MLX}:
 			mv mlx/libmlx.dylib .
 
 all:		${NAME}
+
+bonus:		all
 
 clean:		
 			rm -f ${OBJS}
