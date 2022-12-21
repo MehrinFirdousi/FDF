@@ -49,9 +49,10 @@ void	mlx_set_up(t_mlx *mlx, t_data *img)
 	mlx->dvd_translate = 0;
 }
 
-// check for leaks
 int	exit_free(t_mlx *m)
 {
+	mlx_destroy_image(m->mlx, m->img->img);
+	mlx_destroy_window(m->mlx, m->win);
 	ft_lstclear(&m->lst, &free);
 	exit(0);
 }

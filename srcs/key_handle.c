@@ -59,7 +59,10 @@ int	key_hold_handler(int keycode, t_mlx *m)
 		else if (keycode == MINUS && m->scale > 1)
 			m->scale -= ZOOM;
 		else if (keycode == ENTER)
+		{
 			m->dvd_translate = !m->dvd_translate;
+			// return (1);
+		}
 		else
 			return (1);
 		redraw_image(m);
@@ -71,6 +74,7 @@ int	key_click_handler(int keycode, t_mlx *m)
 {
 	if (keycode == ESC)
 	{
+		mlx_destroy_image(m->mlx, m->img->img);
 		mlx_destroy_window(m->mlx, m->win);
 		ft_lstclear(&m->lst, &free);
 		exit(0);
@@ -90,7 +94,6 @@ int	key_click_handler(int keycode, t_mlx *m)
 		m->cur_projection = 4;
 		redraw_image(m);
 	}
-	printf("keycode=%d\n", keycode);
 	return (0);
 }
 
@@ -105,9 +108,6 @@ void	redraw_image(t_mlx *m)
 	else if (m->cur_projection == 2)
 		draw_image(m, transform_2d);
 	else if (m->cur_projection == 4)
-	{
-		printf("hi\n");
 		draw_image(m, transform_cabinet);
-	}
 	mlx_put_image_to_window(m->mlx, m->win, m->img->img, 0, 0);
 }

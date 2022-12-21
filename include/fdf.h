@@ -17,9 +17,10 @@
 # include <mlx.h>
 # include <math.h>
 # include <fcntl.h>
-# define WIN_WIDTH 1580
-// # define WIN_HEIGHT 720
-# define WIN_HEIGHT 980
+# define WIN_WIDTH 1280
+// # define WIN_WIDTH 1580
+# define WIN_HEIGHT 620
+// # define WIN_HEIGHT 980
 # define WW WIN_WIDTH
 # define WH WIN_HEIGHT
 # define WHITE 16777215
@@ -53,6 +54,7 @@
 #  define ESC	65307
 #  define TWO	50
 #  define THREE	51
+#  define FOUR	52
 #  define LEFT	65361
 #  define UP	65362
 #  define RIGHT	65363
